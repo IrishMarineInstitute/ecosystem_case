@@ -66,13 +66,13 @@ if(data_type=="biogeochemistry" & !parameter %in% c("chl","phyc","o2","no3","po4
 
 #####################Reading in data ##############################
 if(data_type=="physics"){
-ncpath<-"data/copernicus_phys_monthly.nc"
-full_names<-read.csv('data/PhysDesc.csv')
+ncpath<-"L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/copernicus_phys_monthly.nc"
+full_names<-read.csv('L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/PhysDesc.csv')
 }
 
 else if(data_type=="biogeochemistry"){
-ncpath<-"data/copernicus_bio_monthly.nc"
-full_names<-read.csv('data/BioChemDesc.csv')
+ncpath<-"L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/copernicus_bio_monthly.nc"
+full_names<-read.csv('L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/BioChemDesc.csv')
 }
 ####################################################################
 ##############Spatial plot defining color scheme###################

@@ -1,5 +1,5 @@
 ---
-title: "Test render function"
+title: "Test Version"
 date: "`r Sys.Date()`"
 output:
   rmdformats::readthedown:
@@ -203,8 +203,8 @@ source("functions/copernicus_ocean_variables.R")
 source("functions/zooplankton_variables.R")
 
 ######Copernicus data headings based on the selection############
-f1_names<-read.csv('data/PhysDesc.csv')
-f2_names<-read.csv('data/BioChemDesc.csv')
+f1_names<-read.csv('L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/PhysDesc.csv')
+f2_names<-read.csv('L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/BioChemDesc.csv')
 
 
 ###0. Remove results from previous run 
@@ -250,7 +250,7 @@ _Load and transform shapefile_
 #  "MSFD_BBHT_Ireland2019"
 # )
 
-sb2019 <-readOGR("L:\InformaticsProject\Phase2\Ecosystem\Template_Ecosystem\MSFD","MSFD_BBHT_Ireland2019")
+sb2019 <-readOGR("L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/MSFD","MSFD_BBHT_Ireland2019")
 
 
 ###############################################################################
@@ -390,7 +390,7 @@ copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",par
 ## Observed Counts
 
 ```{r,message=F,warning=F,echo=FALSE}
-oops_wide<-read.csv("data/zooplankton/oops_wide.csv")
+oops_wide<-read.csv("L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/zooplankton/oops_wide.csv")
 oops.subset <- filter(oops_wide, Latitude > ymin & Latitude < ymax& 
                          Longitude >xmin &Longitude  < xmax&
                          Season==season&year>=first(Year)&year<=last(Year))

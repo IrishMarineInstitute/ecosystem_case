@@ -81,6 +81,4 @@ max_rel_error = 0.3
 
 
 
-###Interactive
-#rmarkdown::render("test.Rmd",params = "ask")
 
