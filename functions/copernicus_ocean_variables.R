@@ -66,13 +66,13 @@ if(data_type=="biogeochemistry" & !parameter %in% c("chl","phyc","o2","no3","po4
 
 #####################Reading in data ##############################
 if(data_type=="physics"){
-ncpath<-"L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/copernicus_phys_monthly.nc"
-full_names<-read.csv('L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/PhysDesc.csv')
+ncpath<-paste0(Data_location,"Template_Ecosystem/data/copernicus_phys_monthly.nc")
+full_names<-read.csv(paste0(Data_location,'Template_Ecosystem/data/PhysDesc.csv'))
 }
 
 else if(data_type=="biogeochemistry"){
-ncpath<-"L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/copernicus_bio_monthly.nc"
-full_names<-read.csv('L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/BioChemDesc.csv')
+ncpath<-paste0(Data_location,"Template_Ecosystem/data/copernicus_bio_monthly.nc")
+full_names<-read.csv(paste0(Data_location,'Template_Ecosystem/data/BioChemDesc.csv'))
 }
 ####################################################################
 ##############Spatial plot defining color scheme###################
@@ -181,16 +181,7 @@ d<-filter(combined,parameter==parameter)
  print(temp_plt)
  
 
- 
  dd<-subset(slice,lev[month,year])
- png(filename =paste0(plot.path,parameter,"_Spatial.png"))
- print(levelplot(dd,contour=TRUE,col.regions=coll,main=paste(filter(full_names,Name==parameter)[1,2])))
- dev.off()
- 
- png(filename =paste0(plot.path,parameter,"_violin.png"))
- print(bwplot(dd,main=paste(filter(full_names,Name==parameter)[1,2])))
- dev.off()
- 
  
 ###############violin plot################
  
@@ -205,6 +196,17 @@ if(spatial_plot==TRUE){
     p1<-levelplot(dd,contour=TRUE,col.regions=coll,main=paste(filter(full_names,Name==parameter)[1,2]))
     print(p1)
 }
+ 
+ 
+ 
+  png(filename =paste0(plot.path,parameter,"_Spatial.png"))
+ print(levelplot(dd,contour=TRUE,col.regions=coll,main=paste(filter(full_names,Name==parameter)[1,2])))
+ whatever <-dev.off()
+  
+  png(filename =paste0(plot.path,parameter,"_violin.png"))
+ print(bwplot(dd,main=paste(filter(full_names,Name==parameter)[1,2])))
+ whatever <-dev.off()
+  
 #  ###############summary table################
 #  if(summary_table==TRUE){
 #    t1 <- tableGrob(combined, theme=ttheme_minimal(), rows=NULL, cols=colnames(combined))

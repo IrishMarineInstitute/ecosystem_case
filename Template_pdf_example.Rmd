@@ -1,0 +1,482 @@
+---
+title: "Test Version"
+date: "`r Sys.Date()`"
+output: pdf_document
+  
+params:
+  
+ Data_location:
+         value: x
+ xmin:
+    value: x
+ xmax:
+    value:x
+   
+ ymin:
+    value:x
+  
+ ymax:
+    value:x
+  
+ month:
+    value:x
+    
+    
+ year:
+    value:x
+    
+ Biozone:
+    value: x
+    
+ Substrate:
+    value: x
+   
+ Folk_5:
+    value: x
+  
+ EUNIS:
+    value:x
+  
+ MSFD_BBHT:
+    value:x
+     
+ save_table_as:
+    value: x
+  
+ map:
+    value: x    
+     
+ thetao:
+    value: x
+    
+ bottomT:
+     value: x
+     
+ so:
+    value: x
+    
+ zos:
+    value: x
+    
+ uo:
+     value: x
+   
+ vo:
+    value: x
+    
+ mlotst:
+     value: x
+     
+ chl:
+    value: x
+    
+ phyc:
+    value: x
+ 
+  
+ o2:
+    value: x
+  
+ no3:
+    value: x
+    
+ po4:
+    value: x
+     
+ si:
+    value: x
+    
+ fe:
+     value: x
+     
+ nh4:
+    value: x
+    
+ nppv:
+   value: x
+    
+ zeu:
+     value: x
+     
+ spatial_plot:
+    value: x
+    
+ violin_plot:
+     value: x  
+     
+ season:
+     value: x
+     
+ Year:
+     value: x
+     
+ Acartia:
+     value: x
+   
+   
+ Calanus_finmarchicus:
+     value:x
+    
+ Calanus_helgolandicus:
+      value: x
+ 
+     
+ Metridia_lucens:
+    value:x
+      
+ Temora_longicornis:
+       value: x
+      
+ Large_copepods:
+        value: x
+       
+ Small_copepods:
+        value: x
+      
+ time_bin :
+        value:x
+      
+ max_rel_error:
+       value:x
+        
+      
+    
+
+---
+
+
+```{r setup, echo=FALSE, cache=FALSE}
+
+ Data_location=params$Data_location
+ xmin=params$xmin
+ xmax=params$xmax
+ ymin=params$ymin
+ ymax=params$ymax
+ month=params$month
+ year=params$year
+ thetao=params$thetao
+ Biozone=params$Biozone
+ Substrate=params$Substrate
+ Folk_5=params$Folk_5
+ EUNIS=params$EUNIS
+ MSFD_BBHT=params$MSFD_BBHT 
+ save_table_as=params$save_table_as
+ map=params$map
+ bottomT=params$bottomT
+ so=params$so
+ zos=params$zos
+ uo=params$uo
+ vo=params$vo
+ mlotst=params$mlotst
+ chl=params$chl
+ phyc=params$phyc
+ o2=params$o2
+ no3=params$no3
+ po4=params$po4
+ si=params$si
+ fe=params$fe
+ nh4=params$nh4
+ nppv=params$nppv
+ zeu=params$zeu
+ spatial_plot=params$spatial_plot
+ violin_plot=params$violin_plot
+ season=params$season
+ Year=params$Year
+ Acartia=params$Acartia
+  Calanus_finmarchicus=params$Calanus_finmarchicus
+  Calanus_helgolandicus=params$Calanus_helgolandicus
+  Metridia_lucens=params$Metridia_lucens
+  Temora_longicornis=params$Temora_longicornis
+  Large_copepods=params$Large_copepods
+  Small_copepods=params$Small_copepods
+  time_bin=params$time_bin
+  max_rel_error=params$max_rel_error
+
+
+
+#######################################
+##Load additional functions functions##
+#######################################
+
+source("functions/seabed_habitats_summary.R")
+source("functions/copernicus_ocean_variables.R")
+source("functions/zooplankton_variables.R")
+
+######Copernicus data headings based on the selection############
+f1_names<-read.csv(paste0(Data_location,'Template_Ecosystem/data/PhysDesc.csv'))
+f2_names<-read.csv(paste0(Data_location,'Template_Ecosystem/data/BioChemDesc.csv'))
+
+
+###0. Remove results from previous run 
+do.call(unlink,list(list.files("results/data/seabed_habitats_summary/",full.names=TRUE)))
+do.call(unlink,list(list.files("results/data/copernicus_ocean_variables/",full.names=TRUE)))
+do.call(unlink,list(list.files("results/plots/copernicus_ocean_variables/",full.names=TRUE)))
+do.call(unlink,list(list.files("results/data/zooplankton/",full.names=TRUE)))
+do.call(unlink,list(list.files("results/plots/zooplankton/",full.names=TRUE))) 
+```
+
+
+_Load packages_
+
+```{r load packages,warning=FALSE,message=FALSE,echo=FALSE}
+library(knitr)
+library(htmltools)
+library(rmdformats)
+library(xlsx)
+library(raster)
+library(rasterVis)
+library(rerddap)
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(rgdal)
+library(leaflet)
+library(RColorBrewer)
+library(randomcoloR)
+library(widgetframe)
+
+```
+ 
+_Load and transform shapefile_
+
+```{r}
+
+###1.Load seabed habitats shapefile
+
+
+sb2019 <-readOGR(paste0(Data_location,"Template_Ecosystem/data/MSFD"),"MSFD_BBHT_Ireland2019")
+
+
+###############################################################################
+####"Mercator" Coordinate Reference Systems used in the habitat shapefile######
+###############################################################################
+
+###2. Transform to "WGS84" Coordinate Reference Systems
+
+##############################################################################################
+#### spTransform() function from sp package used to transform from "Mercator" to "WGS84" CRS##
+##############################################################################################
+
+ sb2019 <-
+ spTransform(sb2019,
+ "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+
+
+
+
+```
+
+# Seabed Habitats Mapping around Ireland
+
+
+
+## Summary
+
+```{r,results='asis',echo=F}
+
+seabed_habitats_summary(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax,
+                        Biozone=Biozone,Substrate=Substrate,Folk_5=Folk_5,
+                        EUNIS=EUNIS,MSFD_BBHT=MSFD_BBHT,save_table_as=save_table_as)
+
+```
+
+```{r,echo=FALSE,results='asis'}
+if(map==T){
+cat("## Map")}
+```
+
+```{r,echo=FALSE}
+
+
+if(map==T){
+
+ seabed_habitats_summary(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax,
+                         Biozone=F,Substrate=F,Folk_5=F,
+                         EUNIS=F,MSFD_BBHT=F,save_table_as=F,map=T)
+ 
+  }
+```
+
+# Copernicus Marine Service Data
+
+##  Ocean Physics Realanalysis {.tabset .tabset-fade .tabset-pills}
+
+```{r,echo=FALSE,results='asis'}
+if(thetao==T){
+cat(paste("###  ",filter(f1_names,Name=="thetao")[1,2]))}
+```
+
+
+```{r,message=F,echo=FALSE}
+
+
+if(thetao==T){
+copernicus_ocean_variables(month=month,year=year,data_type="physics",parameter="thetao",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
+
+
+```{r,echo=FALSE,results='asis'}
+if(bottomT==T){
+cat(paste("###  ",filter(f1_names,Name=="bottomT")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+
+
+if(bottomT==T){
+ copernicus_ocean_variables(month=month,year=year,data_type="physics",parameter="bottomT",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
+
+```{r,echo=FALSE,results='asis'}
+if(so==T){
+cat(paste("###  ",filter(f1_names,Name=="so")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+ if(so==T){
+ copernicus_ocean_variables(month=month,year=year,data_type="physics",parameter="so",violin_plot=violin_plot,spatial_plot=spatial_plot)
+ }
+```
+
+```{r,echo=FALSE,results='asis'}
+if(zos==T){
+cat(paste("###  ",filter(f1_names,Name=="zos")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+ if(zos==T){
+ copernicus_ocean_variables(month=month,year=year,data_type="physics",parameter="zos",violin_plot=violin_plot,spatial_plot=spatial_plot)
+ }
+```
+
+
+
+## Ocean BioGeoChemistry NON ASSIMILATIVE Hindcast {.tabset .tabset-fade .tabset-pills}
+
+
+```{r,echo=FALSE,results='asis'}
+if(chl==T){
+cat(paste("###  ",filter(f2_names,Name=="chl")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+if(chl==T){
+copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",parameter="chl",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
+
+```{r,echo=FALSE,results='asis'}
+if(phyc==T){
+cat(paste("###  ",filter(f2_names,Name=="phyc")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+if(phyc==T){
+copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",parameter="phyc",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
+
+
+#  An operational zooplankton data service
+
+## Observed Counts
+
+```{r,message=F,warning=F,echo=FALSE}
+oops_wide<-read.csv(paste0(Data_location,"Template_Ecosystem/data/zooplankton/oops_wide.csv"))
+oops.subset <- filter(oops_wide, Latitude > ymin & Latitude < ymax& 
+                         Longitude >xmin &Longitude  < xmax&
+                         Season==season&year>=first(Year)&year<=last(Year))
+
+if(dim(oops.subset)[1]==0){
+  print("No data available")
+}else{
+ plt<-ggplot(oops.subset , aes(fill=Zooplankton, y=Count, x=year))+
+   geom_bar(position="stack", stat="identity")
+  ggsave("results/plots/zooplankton/Zoo_Obs_prop.png")
+  print(plt)}
+```
+
+## Data Interpolation and Variational Analysis {.tabset .tabset-fade .tabset-pills}
+
+```{r,echo=FALSE,results='asis'}
+if(Acartia==T){
+cat(paste("###  Acartia"))}
+```
+
+```{r,message=F,echo=FALSE,warning=F} 
+ if(Acartia==T){
+zooplankton_variables(season=season,Year=Year,species = "Acartia",max_rel_error=max_rel_error,time_bin=time_bin)
+  }
+```
+
+```{r,echo=FALSE,results='asis'}
+if(Calanus_finmarchicus==T){
+cat(paste("###  Calanus_finmarchicus"))}
+```
+
+```{r,message=F,echo=FALSE,warning=F} 
+ if(Calanus_finmarchicus==T){
+zooplankton_variables(season=season,Year=Year,species = "Calanus_finmarchicus",max_rel_error=max_rel_error,time_bin=time_bin)
+  }
+```
+
+```{r,echo=FALSE,results='asis'}
+if(Calanus_helgolandicus==T){
+cat(paste("###  Calanus_helgolandicus"))}
+```
+
+```{r,message=F,echo=FALSE,warning=F} 
+ if(Calanus_helgolandicus==T){
+zooplankton_variables(season=season,Year=Year,species = "Calanus_helgolandicus",max_rel_error=max_rel_error,time_bin=time_bin)
+  }
+```
+
+```{r,echo=FALSE,results='asis'}
+if(Metridia_lucens==T){
+cat(paste("###  Metridia_lucens"))}
+```
+
+```{r,message=F,echo=FALSE,warning=F} 
+ if(Metridia_lucens==T){
+zooplankton_variables(season=season,Year=Year,species = "Metridia_lucens",max_rel_error=max_rel_error,time_bin=time_bin)
+  }
+```
+
+
+```{r,echo=FALSE,results='asis'}
+if(Temora_longicornis==T){
+cat(paste("###  Temora_longicornis"))}
+```
+
+```{r,message=F,echo=FALSE,warning=F} 
+ if(Temora_longicornis==T){
+zooplankton_variables(season=season,Year=Year,species = "Temora_longicornis",max_rel_error=max_rel_error,time_bin=time_bin)
+  }
+```
+
+```{r,echo=FALSE,results='asis'}
+if(Large_copepods==T){
+cat(paste("###  Large_copepods"))}
+```
+
+```{r,message=F,echo=FALSE,warning=F} 
+ if(Large_copepods==T){
+zooplankton_variables(season=season,Year=Year,species = "Large_copepods",max_rel_error=max_rel_error,time_bin=time_bin)
+  }
+```
+
+```{r,echo=FALSE,results='asis'}
+if(Small_copepods==T){
+cat(paste("###  Small_copepods"))}
+```
+
+```{r,message=F,echo=FALSE,warning=F} 
+ if(Small_copepods==T){
+zooplankton_variables(season=season,Year=Year,species = "Small_copepods",max_rel_error=max_rel_error,time_bin=time_bin)
+  }
+```
+
+

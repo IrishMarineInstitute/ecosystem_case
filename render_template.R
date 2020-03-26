@@ -1,4 +1,12 @@
-rmarkdown::render("Template_example.Rmd",params = list(
+
+#output<-c("html","pdf")
+#output<-"pdf"
+output<-"html"
+for(i in 1:length(output)){
+rmarkdown::render(paste0("Template_",output[i],"_example.Rmd"),params = list(
+#Data_location<-"L:/InformaticsProject/Phase2/Ecosystem/",
+Data_location="C:/", 
+  
 ####################0.Select area of interest####
 #################################################
 xmin=-11,
@@ -21,7 +29,7 @@ MSFD_BBHT = T,
 #save_table_as=T
 #save_table_as="csv",
 save_table_as="xlsx",
-map = T,
+map = F,
 
 #######################################
 ####2. Copernicus data settings##
@@ -76,8 +84,7 @@ time_bin = "1_year",
 # #max_rel_error =0
 max_rel_error = 0.3 
 #max_rel_error =0.5
-)
-)
+))}
 
 
 

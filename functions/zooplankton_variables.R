@@ -34,12 +34,12 @@ zooplankton_variables<-function(season,Year,species,max_rel_error,time_bin){
   xx1<-list()
   xx2<-list()
   for(i in 1 :length(sp)){
-  x[[i]]<-paste0("L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_one_year.grd")
-   x1[[i]]<-paste0("L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_L1_one_year.grd")
-   x2[[i]]<-paste0("L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_L2_one_year.grd")
-   xx[[i]]<-paste0("L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_ten_years.grd")
-   xx1[[i]]<-paste0("L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_L1_ten_years.grd")
-   xx2[[i]]<-paste0("L:/InformaticsProject/Phase2/Ecosystem/Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_L2_ten_years.grd")
+  x[[i]]<-paste0(Data_location,"Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_one_year.grd")
+   x1[[i]]<-paste0(Data_location,"Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_L1_one_year.grd")
+   x2[[i]]<-paste0(Data_location,"Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_L2_one_year.grd")
+   xx[[i]]<-paste0(Data_location,"Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_ten_years.grd")
+   xx1[[i]]<-paste0(Data_location,"Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_L1_ten_years.grd")
+   xx2[[i]]<-paste0(Data_location,"Template_Ecosystem/data/zooplankton/",sp[i],"/Ab_L2_ten_years.grd")
   }
   
   #####################Reading in data ##############################
