@@ -1,9 +1,19 @@
+# For pdf output require Tinytex package installation
+#1.Install MiKTeX on Windows or IOS
+#2.Install R package Tinytex
+### CRAN version
+   #install.packages('tinytex')
+# or the development version on Github
+   #devtools::install_github('yihui/tinytex')
 
-#output<-c("html","pdf")
-#output<-"pdf"
-output<-"html"
+output<-c("html","pdf")
+#output<-"pdf" 
+#output<-"html"
 for(i in 1:length(output)){
-rmarkdown::render(paste0("Template_",output[i],"_example.Rmd"),params = list(
+do.call(unlink,list(paste0(getwd(),"/report_runs/Template_",output[i],"_example.",output[i])))
+rmarkdown::render(paste0("Template_",output[i],"_example.Rmd"),
+                  output_dir = paste0(getwd(),"/report_runs")
+                  ,params = list(
 #Data_location<-"L:/InformaticsProject/Phase2/Ecosystem/",
 Data_location="C:/", 
   
@@ -29,7 +39,9 @@ MSFD_BBHT = T,
 #save_table_as=T
 #save_table_as="csv",
 save_table_as="xlsx",
-map = F,
+map = F,# If TRUE only avialable with HTML format ..slowing rendering 
+        #and increasing output size from 2.5MB to approx 75MB
+        
 
 #######################################
 ####2. Copernicus data settings##

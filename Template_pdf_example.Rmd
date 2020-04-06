@@ -208,6 +208,7 @@ f2_names<-read.csv(paste0(Data_location,'Template_Ecosystem/data/BioChemDesc.csv
 
 
 ###0. Remove results from previous run 
+
 do.call(unlink,list(list.files("results/data/seabed_habitats_summary/",full.names=TRUE)))
 do.call(unlink,list(list.files("results/data/copernicus_ocean_variables/",full.names=TRUE)))
 do.call(unlink,list(list.files("results/plots/copernicus_ocean_variables/",full.names=TRUE)))
@@ -281,22 +282,9 @@ seabed_habitats_summary(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax,
 
 ```
 
-```{r,echo=FALSE,results='asis'}
-if(map==T){
-cat("## Map")}
-```
-
-```{r,echo=FALSE}
-
-
-if(map==T){
-
- seabed_habitats_summary(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax,
-                         Biozone=F,Substrate=F,Folk_5=F,
-                         EUNIS=F,MSFD_BBHT=F,save_table_as=F,map=T)
  
-  }
-```
+
+
 
 # Copernicus Marine Service Data
 
