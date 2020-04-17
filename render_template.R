@@ -7,13 +7,15 @@
    #devtools::install_github('yihui/tinytex')
 
 output<-c("html","pdf")
+unlink(paste0(getwd(),"/report_runs"),recursive = T)
 #output<-"pdf" 
 #output<-"html"
 for(i in 1:length(output)){
-do.call(unlink,list(paste0(getwd(),"/report_runs/Template_",output[i],"_example.",output[i])))
 rmarkdown::render(paste0("Template_",output[i],"_example.Rmd"),
                   output_dir = paste0(getwd(),"/report_runs")
                   ,params = list(
+####################Select or modify data location path####
+#################################################
 #Data_location<-"L:/InformaticsProject/Phase2/Ecosystem/",
 Data_location="C:/", 
   

@@ -217,7 +217,7 @@ do.call(unlink,list(list.files("results/plots/zooplankton/",full.names=TRUE)))
 ```
 
 
-_Load packages_
+
 
 ```{r load packages,warning=FALSE,message=FALSE,echo=FALSE}
 library(knitr)
