@@ -355,6 +355,39 @@ cat(paste("###  ",filter(f1_names,Name=="zos")[1,2]))}
 ```
 
 
+```{r,echo=FALSE,results='asis'}
+if(uo==T){
+cat(paste("###  ",filter(f1_names,Name=="uo")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+ if(uo==T){
+ copernicus_ocean_variables(month=month,year=year,data_type="physics",parameter="uo",violin_plot=violin_plot,spatial_plot=spatial_plot)
+ }
+```
+
+
+```{r,echo=FALSE,results='asis'}
+if(vo==T){
+cat(paste("###  ",filter(f1_names,Name=="vo")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+ if(vo==T){
+ copernicus_ocean_variables(month=month,year=year,data_type="physics",parameter="vo",violin_plot=violin_plot,spatial_plot=spatial_plot)
+ }
+```
+
+```{r,echo=FALSE,results='asis'}
+if(mlotst==T){
+cat(paste("###  ",filter(f1_names,Name=="mlotst")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+ if(mlotst==T){
+ copernicus_ocean_variables(month=month,year=year,data_type="physics",parameter="mlotst",violin_plot=violin_plot,spatial_plot=spatial_plot)
+ }
+```
 
 ## Ocean BioGeoChemistry NON ASSIMILATIVE Hindcast {.tabset .tabset-fade .tabset-pills}
 
@@ -381,7 +414,91 @@ copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",par
 }
 ```
 
+```{r,echo=FALSE,results='asis'}
+if(o2==T){
+cat(paste("###  ",filter(f2_names,Name=="o2")[1,2]))}
+```
 
+```{r,message=F,echo=FALSE}
+if(o2==T){
+copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",parameter="o2",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
+```{r,echo=FALSE,results='asis'}
+if(no3==T){
+cat(paste("###  ",filter(f2_names,Name=="no3")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+if(no3==T){
+copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",parameter="no3",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
+
+```{r,echo=FALSE,results='asis'}
+if(po4==T){
+cat(paste("###  ",filter(f2_names,Name=="po4")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+if(po4==T){
+copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",parameter="po4",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
+
+```{r,echo=FALSE,results='asis'}
+if(si==T){
+cat(paste("###  ",filter(f2_names,Name=="si")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+if(si==T){
+copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",parameter="si",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
+```{r,echo=FALSE,results='asis'}
+if(fe==T){
+cat(paste("###  ",filter(f2_names,Name=="fe")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+if(fe==T){
+copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",parameter="fe",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
+
+```{r,echo=FALSE,results='asis'}
+if(nh4==T){
+cat(paste("###  ",filter(f2_names,Name=="nh4")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+if(nh4==T){
+copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",parameter="nh4",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
+
+```{r,echo=FALSE,results='asis'}
+if(nppv==T){
+cat(paste("###  ",filter(f2_names,Name=="nppv")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+if(nppv==T){
+copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",parameter="nppv",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
+
+```{r,echo=FALSE,results='asis'}
+if(zeu==T){
+cat(paste("###  ",filter(f2_names,Name=="zeu")[1,2]))}
+```
+
+```{r,message=F,echo=FALSE}
+if(zeu==T){
+copernicus_ocean_variables(month=month,year=year,data_type="biogeochemistry",parameter="zeu",violin_plot=violin_plot,spatial_plot=spatial_plot)
+}
+```
 #  An operational zooplankton data service
 
 ## Observed Counts

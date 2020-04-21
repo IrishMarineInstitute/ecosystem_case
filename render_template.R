@@ -6,17 +6,17 @@
 # or the development version on Github
    #devtools::install_github('yihui/tinytex')
 
-output<-c("html","pdf")
+#output<-c("html","pdf")
 unlink(paste0(getwd(),"/report_runs"),recursive = T)
 #output<-"pdf" 
-#output<-"html"
+output<-"html"
 for(i in 1:length(output)){
 rmarkdown::render(paste0("Template_",output[i],"_example.Rmd"),
                   output_dir = paste0(getwd(),"/report_runs")
                   ,params = list(
 ####################Select or modify data location path####
 #################################################
-Data_location<-"L:/InformaticsProject/Phase2/Ecosystem/",
+Data_location="L:/InformaticsProject/Phase2/Ecosystem/",
 #Data_location="C:/", 
   
 ####################0.Select area of interest####
@@ -61,7 +61,7 @@ so=T,
 zos=T,
 uo=F,
 vo=F,
-mlotst=F,
+mlotst=T,
 #################specific to 'biogeochemistry'########
 chl=T,
 phyc=T,
@@ -70,9 +70,9 @@ no3=F,
 po4=F,
 si=F,
 fe=F,
-nh4=F,
+nh4=T,
 nppv=F,
-zeu=F,
+zeu=T,
 spatial_plot=T,
 violin_plot=T,
 ####################
