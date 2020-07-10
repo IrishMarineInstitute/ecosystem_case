@@ -5,7 +5,7 @@
 Fish and shellfish stock abundance and productivity highly depends on complex physical, biological and ecosystem drivers but can be vary across space and time. This creates complexity for fish stock assessors since Marine Institute surveys collected data at fixed points in space and time and cannot monitor fish stock each month of the year.  The idea of this case study is to provide a useful tool box to extract, summarise and visualise data sources that might be useful develop process understanding in fisheries systems (i.e. useful explanatory variables).  The tool box via shiny application generates user-selected parameterized report with plots and/or summaries for selected area defined by latitude-longitude coordinates that covers specific time period.
 
 
-[![diag_new.png|400x100](https://i.postimg.cc/Bt7xXGdb/diag_new.png)](https://postimg.cc/Bt7xXGdb)
+[![diag_new.png|400x700](https://i.postimg.cc/Bt7xXGdb/diag_new.png)](https://postimg.cc/Bt7xXGdb)
 
 
 <p>Below are the links to the source code for each of the Phase 1 projects.</p>
