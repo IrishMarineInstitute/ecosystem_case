@@ -221,22 +221,23 @@ do.call(unlink,list(list.files("results/plots/zooplankton/",full.names=TRUE)))
 
 
 ```{r load packages,warning=FALSE,message=FALSE,echo=FALSE}
-library(knitr)
-library(htmltools)
-library(rmdformats)
-library(xlsx)
-library(raster)
-library(rasterVis)
-library(rerddap)
-library(plyr)
-library(dplyr)
-library(ggplot2)
-library(gridExtra)
-library(rgdal)
-library(leaflet)
-library(RColorBrewer)
-library(randomcoloR)
-library(widgetframe)
+ library(knitr)
+ library(htmltools)
+ library(rmdformats)
+ library(xlsx)
+ library(raster)
+ library(rasterVis)
+ library(rerddap)
+ library(plyr)
+ library(dplyr)
+ library(ggplot2)
+ library(gridExtra)
+ library(rgdal)
+ library(leaflet)
+ library(RColorBrewer)
+ library(randomcoloR)
+ library(widgetframe)
+
 
 ```
  
@@ -275,7 +276,7 @@ sb2019 <-readOGR(paste0(Data_location,"Template_Ecosystem/data/MSFD"),"MSFD_BBHT
 
 ## Summary
 
-```{r,results='asis',echo=F}
+```{r,results='asis',echo=F,warning=FALSE,message=F}
 
 seabed_habitats_summary(xmin=xmin,xmax=xmax,ymin=ymin,ymax=ymax,
                         Biozone=Biozone,Substrate=Substrate,Folk_5=Folk_5,

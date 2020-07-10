@@ -201,6 +201,7 @@ params:
 source("functions/seabed_habitats_summary.R")
 source("functions/copernicus_ocean_variables.R")
 source("functions/zooplankton_variables.R")
+ 
 
 ######Copernicus data headings based on the selection############
 f1_names<-read.csv(paste0(Data_location,'Template_Ecosystem/data/PhysDesc.csv'))
@@ -220,22 +221,24 @@ do.call(unlink,list(list.files("results/plots/zooplankton/",full.names=TRUE)))
 
 
 ```{r load packages,warning=FALSE,message=FALSE,echo=FALSE}
-library(knitr)
-library(htmltools)
-library(rmdformats)
-library(xlsx)
-library(raster)
-library(rasterVis)
-library(rerddap)
-library(plyr)
-library(dplyr)
-library(ggplot2)
-library(gridExtra)
-library(rgdal)
-library(leaflet)
-library(RColorBrewer)
-library(randomcoloR)
-library(widgetframe)
+ library(knitr)
+ library(htmltools)
+ library(rmdformats)
+ library(xlsx)
+ library(raster)
+ library(rasterVis)
+ library(rerddap)
+ library(plyr)
+ library(dplyr)
+ library(ggplot2)
+ library(gridExtra)
+ library(rgdal)
+ library(leaflet)
+ library(RColorBrewer)
+ library(randomcoloR)
+ library(widgetframe)
+
+
 
 ```
  

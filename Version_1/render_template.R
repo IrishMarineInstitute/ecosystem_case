@@ -16,8 +16,8 @@ rmarkdown::render(paste0("Template_",output[i],"_example.Rmd"),
                   ,params = list(
 ####################Select or modify data location path####
 #################################################
-Data_location="L:/InformaticsProject/Phase2/Ecosystem/",
-#Data_location="C:/", 
+#Data_location="L:/InformaticsProject/Phase2/Ecosystem/",
+Data_location="C:/", 
   
 ####################0.Select area of interest####
 #################################################
