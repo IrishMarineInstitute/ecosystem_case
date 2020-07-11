@@ -1,0 +1,11 @@
+Name,Description,Standard Name,Units
+chl,Mass Concentration of Chlorophyll in Sea Water,mass_concentration_of_chlorophyll_a_in_sea_water,mg.m-3
+phyc,Mole Concentration of Phytoplankton Expressed as Carbon in Sea Water,mole_concentration_of_phytoplankton_expressed_as_carbon_in_sea_water,mmol.m-3
+o2,Mole Concentration of Dissolved Oxygen in Sea Water,mole_concentration_of_dissolved_molecular_oxygen_in_sea_water,mmol.m-3
+no3,Mole Concentration of Nitrate in Sea Water,mole_concentration_of_nitrate_in_sea_water,mmol.m-3
+po4,Mole Concentration of Phosphate in Sea Water,mole_concentration_of_phosphate_in_sea_water,mmol.m-3
+si,Mole Concentration of Silicate in Sea Water,mole_concentration_of_silicate_in_sea_water,mmol.m-3
+fe,Mole Concentration of Iron in Sea Water,mole_concentration_of_dissolved_iron_in_sea_water,mmol.m-3
+nh4,Mole Concentration of Ammonium in Sea Water,mole_concentration_of_ammonium_in_sea_water,mmol.m-3
+nppv,Net Primary Productivity of Carbon,net_primary_production_of_biomass_expressed_as_carbon_per_unit_volume_in_sea_water,mg.m-3.day-1
+zeu,Euphotic Zone Depth,euphotic_zone_depth,m

@@ -1,0 +1,10 @@
+Name,Description,Units
+sea_surface_temperature,Monthly mean sea surface temperature,degrees_C
+sea_bottom_temperature,Monthly mean sea bottom temperature,degrees_C
+sea_surface_salinity,Monthly mean sea surface salinity,PSU
+sea_bottom_salinity,Monthly mean sea bottom salinity,PSU
+sea_surface_x_velocity,Monthly mean surface U velocity component,m s-1
+sea_surface_y_velocity,Monthly mean surface V velocity component,m s-1
+significant_wave_height,Monthly mean significant wave height,m
+mean_wave_direction,Monthly mean mean wave direction,degrees
+mean_wave_period,Monthly mean absolute zero-crossing period,s

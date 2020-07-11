@@ -1,0 +1,746 @@
+---
+title: "Template based on selected inputs."
+output:
+  html_document:
+ 
+    toc: true
+
+date: '`r format(Sys.time(), "%d %B, %Y")`'
+params:
+  xcoord: NA
+  ycoord: NA
+  Data1: NA
+  DS1: NA
+  Data2: NA
+  DS2: NA
+  Data3: NA
+  DS3: NA
+  y1: NA
+  m1: NA
+  Data4: NA
+  DS4: NA
+  y2: NA
+  m2: NA
+  Data5: NA
+  DS5: NA
+  y3: NA
+  m3: NA
+  Data6: NA
+  DS6: NA
+  y4: NA
+  season: NA
+  timeGap: NA
+  error: NA
+  rendered_by_shiny: FALSE
+
+ 
+ 
+
+ 
+  
+---
+  
+```{r load packages,warning=FALSE,message=FALSE,echo=FALSE}
+library(sf)
+library(raster)
+library(sp)
+library(mapplots)
+library(knitr)
+library(htmltools)
+library(plyr)
+library(dplyr)
+library(rasterVis)
+library(ncdf4)
+library(ggplot2)
+
+if (params$rendered_by_shiny)
+  shiny::setProgress(1)
+
+
+source(paste0(getwd(),"/functions/ocean_variables.R"))
+
+do.call(unlink,list(list.files("results/plots/",full.names=TRUE)))
+do.call(unlink,list(list.files("results/data/",full.names=TRUE)))
+do.call(unlink,list(list.files("results/data/spatial/",full.names=TRUE)))
+do.call(unlink,list(list.files("results/data/aggregated/",full.names=TRUE)))
+
+```
+
+```{js, echo=FALSE}
+$('.title').css('color', 'blue')
+
+```
+
+## Area of Interest Coordinates
+
+
+
+
+```{r,echo=FALSE,results='asis',warning=FALSE}
+# The `params` object is available in the document.
+xcoord<-as.numeric(unlist(strsplit(params$xcoord, ",")))
+HTML(paste0("x",1:length(xcoord),"=",xcoord))
+if(xcoord<(-18)|xcoord>(-2)){stop("Select xcoord between -18 and -2")}
+
+```
+<br>
+
+```{r,echo=FALSE,results='asis',warning=FALSE}
+
+
+ycoord<-as.numeric(unlist(strsplit(params$ycoord, ",")))
+HTML(paste0("y",1:length(ycoord),"=",ycoord))
+if(ycoord<(48)|ycoord>(56)){stop("Select ycoord between 48 and 56")}
+
+
+```
+
+```{r,echo=FALSE}
+#making spatial polygon for subsetting
+xym <- cbind(xcoord, ycoord)
+p = Polygon(xym)
+ps = Polygons(list(p),1)
+sps = SpatialPolygons(list(ps))
+proj4string(sps) = CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+#plot(sps,axes=T)
+
+```
+
+```{r,echo=FALSE,results='asis'}
+if(is.null(params$Data1)== FALSE){
+  cat(paste("# ", params$Data1, "{.tabset .tabset-fade .tabset-pills}" ))
+ }
+
+```
+
+```{r,echo=FALSE,results='asis'}
+if(is.null(params$Data1)==FALSE){
+  if(is.null(params$DS1)== TRUE){warning(paste("Select",params$Data1, "parameters or unselect data source"))}
+ }
+
+```
+
+```{r,echo=FALSE,results='asis',warning=F,message=F}
+
+if(is.null(params$Data1)==FALSE){
+  #if(is.null(params$DS1)== FALSE){seabed_habitats_summary(sps=sps,parameters = params$DS1)}
+  if(is.null(params$DS1)== FALSE){ocean_variables(sps=sps,data_type=params$Data1,parameter = params$DS1)}
+ }
+```
+
+```{r,echo=FALSE,results='asis'}
+ 
+if(is.null(params$Data2)== FALSE){
+  cat(paste("# ", params$Data2, "{.tabset .tabset-fade .tabset-pills}" ))}
+
+```
+
+
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data2)==FALSE){
+    if(is.null(params$DS2)== TRUE){warning(paste("Select",params$Data2, "parameters or unselect data source"))}
+    else if(params$DS2!="NA"){
+    cat(paste("## ", params$DS2))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE, fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data2)==FALSE){
+    if(is.null(params$DS2)== TRUE){HTML(paste(""))}
+    else if(params$DS2!="NA"){ocean_variables(sps=sps,data_type=params$Data2)}
+   }
+```
+
+
+
+```{r,echo=FALSE,results='asis'}
+if(is.null(params$Data3)== FALSE){
+  cat(paste("# ", params$Data3, "{.tabset .tabset-fade .tabset-pills}" ))}
+
+```
+
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){warning(paste("Select",params$Data3, "parameters or unselect data source"))}
+    else if(is.null(params$DS3[1])== FALSE & is.na(params$DS3[1])== FALSE) {
+    cat(paste("## ", params$DS3[1]))}}
+```
+
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[1])== FALSE & is.na(params$DS3[1])== FALSE) {ocean_variables(sps=sps,month=params$m1,year=min(params$y1):max(params$y1),data_type=params$Data3,parameter=as.character(filter(read.csv("Data/ROMS.csv"),Description ==params$DS3[1])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[2])== FALSE & is.na(params$DS3[2])== FALSE) {
+    cat(paste("## ", params$DS3[2]))}}
+```
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[2])== FALSE & is.na(params$DS3[2])== FALSE) {ocean_variables(sps=sps,month=params$m1,year=min(params$y1):max(params$y1),data_type=params$Data3,parameter=
+                                                                                              as.character(filter(read.csv("Data/ROMS.csv"),Description ==params$DS3[2])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data3)==FALSE){
+   if(is.null(params$DS3)== TRUE){HTML(paste(""))} 
+    else if(is.null(params$DS3[3])== FALSE & is.na(params$DS3[3])== FALSE) {
+    cat(paste("## ", params$DS3[3]))}}
+```
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[3])== FALSE & is.na(params$DS3[3])== FALSE) {ocean_variables(sps=sps,month=params$m1,year=min(params$y1):max(params$y1),data_type=params$Data3,parameter=as.character(filter(read.csv("Data/ROMS.csv"),Description ==params$DS3[3])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[4])== FALSE & is.na(params$DS3[4])== FALSE) {
+    cat(paste("## ", params$DS3[4]))}}
+```
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[4])== FALSE & is.na(params$DS3[4])== FALSE) {ocean_variables(sps=sps,month=params$m1,year=min(params$y1):max(params$y1),data_type=params$Data3,parameter=as.character(filter(read.csv("Data/ROMS.csv"),Description ==params$DS3[4])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[5])== FALSE & is.na(params$DS3[5])== FALSE) {
+    cat(paste("## ", params$DS3[5]))}}
+```
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[5])== FALSE & is.na(params$DS3[5])== FALSE) {ocean_variables(sps=sps,month=params$m1,year=min(params$y1):max(params$y1),data_type=params$Data3,parameter=as.character(filter(read.csv("Data/ROMS.csv"),Description ==params$DS3[5])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[6])== FALSE & is.na(params$DS3[6])== FALSE) {
+    cat(paste("## ", params$DS3[6]))}}
+```
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[6])== FALSE & is.na(params$DS3[6])== FALSE) {ocean_variables(sps=sps,month=params$m1,year=min(params$y1):max(params$y1),data_type=params$Data3,parameter=as.character(filter(read.csv("Data/ROMS.csv"),Description ==params$DS3[6])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[7])== FALSE & is.na(params$DS3[7])== FALSE) {
+    cat(paste("## ", params$DS3[7]))}}
+
+```
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[7])== FALSE & is.na(params$DS3[7])== FALSE) {ocean_variables(sps=sps,month=params$m1,year=min(params$y1):max(params$y1),data_type=params$Data3,parameter=as.character(filter(read.csv("Data/ROMS.csv"),Description ==params$DS3[7])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[8])== FALSE & is.na(params$DS3[8])== FALSE) {
+    cat(paste("## ", params$DS3[8]))}}
+
+```
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[8])== FALSE & is.na(params$DS3[8])== FALSE) {ocean_variables(sps=sps,month=params$m1,year=min(params$y1):max(params$y1),data_type=params$Data3,parameter=as.character(filter(read.csv("Data/ROMS.csv"),Description ==params$DS3[8])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS1)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[9])== FALSE & is.na(params$DS3[9])== FALSE) {
+    cat(paste("## ", params$DS3[9]))}}
+
+```
+
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS3[9])== FALSE & is.na(params$DS3[9])== FALSE) {ocean_variables(sps=sps,month=params$m1,year=min(params$y1):max(params$y1),data_type=params$Data3,parameter=as.character(filter(read.csv("Data/ROMS.csv"),Description ==params$DS3[9])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+if(is.null(params$Data4)== FALSE){
+  cat(paste("# ", params$Data4, "{.tabset .tabset-fade .tabset-pills}" ))}
+
+```
+
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){warning(paste("Select",params$Data4, "parameters or unselect data source"))}
+    else if(is.null(params$DS4[1])== FALSE & is.na(params$DS4[1])== FALSE) {
+    cat(paste("## ", params$DS4[1]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[1])== FALSE & is.na(params$DS4[1])== FALSE) {ocean_variables(sps=sps,month=params$m2,year=min(params$y2):max(params$y2),data_type=params$Data4,parameter=as.character(filter(read.csv("Data/PhysDesc.csv"),Description ==params$DS4[1])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[2])== FALSE & is.na(params$DS4[2])== FALSE) {
+    cat(paste("## ", params$DS4[2]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[2])== FALSE & is.na(params$DS4[2])== FALSE) {ocean_variables(sps=sps,month=params$m2,year=min(params$y2):max(params$y2),data_type=params$Data4,parameter=as.character(filter(read.csv("Data/PhysDesc.csv"),Description ==params$DS4[2])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[3])== FALSE & is.na(params$DS4[3])== FALSE) {
+    cat(paste("## ", params$DS4[3]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[3])== FALSE & is.na(params$DS4[3])== FALSE) {ocean_variables(sps=sps,month=params$m2,year=min(params$y2):max(params$y2),data_type=params$Data4,parameter=as.character(filter(read.csv("Data/PhysDesc.csv"),Description ==params$DS4[3])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[4])== FALSE & is.na(params$DS4[4])== FALSE) {
+    cat(paste("## ", params$DS4[4]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[4])== FALSE & is.na(params$DS4[4])== FALSE) {ocean_variables(sps=sps,month=params$m2,year=min(params$y2):max(params$y2),data_type=params$Data4,parameter=as.character(filter(read.csv("Data/PhysDesc.csv"),Description ==params$DS4[4])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[5])== FALSE & is.na(params$DS4[5])== FALSE) {
+    cat(paste("## ", params$DS4[5]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[5])== FALSE & is.na(params$DS4[5])== FALSE) {ocean_variables(sps=sps,month=params$m2,year=min(params$y2):max(params$y2),data_type=params$Data4,parameter=as.character(filter(read.csv("Data/PhysDesc.csv"),Description ==params$DS4[5])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[6])== FALSE & is.na(params$DS4[6])== FALSE) {
+    cat(paste("## ", params$DS4[6]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[6])== FALSE & is.na(params$DS4[6])== FALSE) {ocean_variables(sps=sps,month=params$m2,year=min(params$y2):max(params$y2),data_type=params$Data4,parameter=as.character(filter(read.csv("Data/PhysDesc.csv"),Description ==params$DS4[6])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[7])== FALSE & is.na(params$DS4[7])== FALSE) {
+    cat(paste("## ", params$DS4[7]))}}
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS4[7])== FALSE & is.na(params$DS4[7])== FALSE) {ocean_variables(sps=sps,month=params$m2,year=min(params$y2):max(params$y2),data_type=params$Data4,parameter=as.character(filter(read.csv("Data/PhysDesc.csv"),Description ==params$DS4[7])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+if(is.null(params$Data5)== FALSE){
+  cat(paste("# ", params$Data5, "{.tabset .tabset-fade .tabset-pills}" ))}
+
+```
+
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){warning(paste("Select",params$Data5, "parameters or unselect data source"))}
+    else if(is.null(params$DS5[1])== FALSE & is.na(params$DS5[1])== FALSE) {
+    cat(paste("## ", params$DS5[1]))}}
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[1])== FALSE & is.na(params$DS5[1])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[1])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[2])== FALSE & is.na(params$DS5[2])== FALSE) {
+    cat(paste("## ", params$DS5[2]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[2])== FALSE & is.na(params$DS5[2])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[2])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[3])== FALSE & is.na(params$DS5[3])== FALSE) {
+    cat(paste("## ", params$DS5[3]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[3])== FALSE & is.na(params$DS5[3])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[3])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[4])== FALSE & is.na(params$DS5[4])== FALSE) {
+    cat(paste("## ", params$DS5[4]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[4])== FALSE & is.na(params$DS5[4])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[4])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[5])== FALSE & is.na(params$DS5[5])== FALSE) {
+    cat(paste("## ", params$DS5[5]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[5])== FALSE & is.na(params$DS5[5])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[5])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[6])== FALSE & is.na(params$DS5[6])== FALSE) {
+    cat(paste("## ", params$DS5[6]))}}
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[6])== FALSE & is.na(params$DS5[6])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[6])[1,1]))}}
+```
+
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[7])== FALSE & is.na(params$DS5[7])== FALSE) {
+    cat(paste("## ", params$DS5[7]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[7])== FALSE & is.na(params$DS5[7])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[7])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[8])== FALSE & is.na(params$DS5[8])== FALSE) {
+    cat(paste("## ", params$DS5[8]))}}
+
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[8])== FALSE & is.na(params$DS5[8])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[8])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[9])== FALSE & is.na(params$DS5[9])== FALSE) {
+    cat(paste("## ", params$DS5[9]))}}
+
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[9])== FALSE & is.na(params$DS5[9])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[9])[1,1]))}}
+```
+
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[10])== FALSE & is.na(params$DS5[10])== FALSE) {
+    cat(paste("## ", params$DS5[10]))}}
+
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS5[10])== FALSE & is.na(params$DS5[10])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[10])[1,1]))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+if(is.null(params$Data6)== FALSE){
+  cat(paste("# ", params$Data6, "{.tabset .tabset-fade .tabset-pills}" ))}
+
+```
+
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data6)==FALSE){
+    if(is.null(params$DS6)== TRUE){warning(paste("Select",params$Data6, "parameters or unselect data source"))}
+    else if(is.null(params$DS6[1])== FALSE & is.na(params$DS6[1])== FALSE) {
+    cat(paste("## ", params$DS6[1]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+if(is.null(params$Data6)==FALSE){
+  if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+  else if(is.null(params$DS6[1])== FALSE & is.na(params$DS6[1])== FALSE) {ocean_variables(sps=sps,month=params$season,year=min(params$y4):max(params$y4),data_type =params$Data6,parameter=params$DS6[1],max_rel_error=as.numeric(params$error))}}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data6)==FALSE){
+    if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS6[2])== FALSE & is.na(params$DS6[2])== FALSE) {
+    cat(paste("## ", params$DS6[2]))}}
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+if(is.null(params$Data6)==FALSE){
+  if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+  else if(is.null(params$DS6[2])== FALSE & is.na(params$DS6[2])== FALSE) {
+   ocean_variables(sps=sps,month=params$season,year=min(params$y4):max(params$y4),data_type =params$Data6,parameter=params$DS6[2],max_rel_error=as.numeric(params$error)) 
+  }}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data6)==FALSE){
+    if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS6[3])== FALSE & is.na(params$DS6[3])== FALSE) {
+    cat(paste("## ", params$DS6[3]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+if(is.null(params$Data6)==FALSE){
+  if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+  else if(is.null(params$DS6[3])== FALSE & is.na(params$DS6[3])== FALSE) {
+    ocean_variables(sps=sps,month=params$season,year=min(params$y4):max(params$y4),data_type =params$Data6,parameter=params$DS6[3],max_rel_error=as.numeric(params$error))
+  }}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data6)==FALSE){
+    if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS6[4])== FALSE & is.na(params$DS6[4])== FALSE) {
+    cat(paste("## ", params$DS6[4]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+if(is.null(params$Data6)==FALSE){
+  if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+  else if(is.null(params$DS6[4])== FALSE & is.na(params$DS6[4])== FALSE) {
+   ocean_variables(sps=sps,month=params$season,year=min(params$y4):max(params$y4),data_type =params$Data6,parameter=params$DS6[5],max_rel_error=as.numeric(params$error)) 
+  }}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data6)==FALSE){
+    if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS6[5])== FALSE & is.na(params$DS6[5])== FALSE) {
+    cat(paste("## ", params$DS6[5]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+if(is.null(params$Data6)==FALSE){
+  if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+  else if(is.null(params$DS6[5])== FALSE & is.na(params$DS6[5])== FALSE) {
+    ocean_variables(sps=sps,month=params$season,year=min(params$y4):max(params$y4),data_type =params$Data6,parameter=params$DS6[5],max_rel_error=as.numeric(params$error))
+  }}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data6)==FALSE){
+    if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS6[6])== FALSE & is.na(params$DS6[6])== FALSE) {
+    cat(paste("## ", params$DS6[6]))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+if(is.null(params$Data6)==FALSE){
+  if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+  else if(is.null(params$DS6[6])== FALSE & is.na(params$DS6[6])== FALSE) {
+    ocean_variables(sps=sps,month=params$season,year=min(params$y4):max(params$y4),data_type =params$Data6,parameter=params$DS6[6],max_rel_error=as.numeric(params$error))
+  }}
+```
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data6)==FALSE){
+    if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+    else if(is.null(params$DS6[7])== FALSE & is.na(params$DS6[7])== FALSE) {
+    cat(paste("## ", params$DS6[7]))}}
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+if(is.null(params$Data6)==FALSE){
+  if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+  else if(is.null(params$DS6[7])== FALSE & is.na(params$DS6[7])== FALSE) {
+    ocean_variables(sps=sps,month=params$season,year=min(params$y4):max(params$y4),data_type =params$Data6,parameter=params$DS6[7],max_rel_error=as.numeric(params$error))
+  }}
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE,include=FALSE}
+df <- list.files(path="results/data/", full.names = TRUE,pattern = "*.csv") %>% 
+  lapply(read_csv) %>% 
+  bind_rows
+
+write.csv(df,"results/data/aggregated/all_aggregated_data.csv",row.names=F)
+do.call(unlink,list(list.files(path="results/data/", full.names = TRUE,pattern = "*.csv")))

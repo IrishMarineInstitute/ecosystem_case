@@ -1,0 +1,4 @@
+Name,Description,Units
+Ab,Abundance,log-transformed 
+Ab_L1,Abundance masked using a relative error threshold of 0.3,log-transformed 
+Ab_L2,Abundance masked using a relative error threshold of 0.5,log-transformed 
