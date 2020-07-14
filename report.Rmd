@@ -44,12 +44,10 @@ params:
 library(sf)
 library(raster)
 library(sp)
-library(mapplots)
 library(knitr)
 library(htmltools)
 library(plyr)
 library(dplyr)
-library(rasterVis)
 library(ncdf4)
 library(ggplot2)
 

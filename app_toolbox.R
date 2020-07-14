@@ -21,6 +21,9 @@ library(leaflet.extras)
 library(mapedit)
 library(sf)
 library(readr)
+library(ncdf4)
+library(ggplot2)
+library(rasterVis)
 
 map <- leaflet() %>%
     addTiles()%>% setView(lng=-12,lat=53,zoom=6)%>%
@@ -160,7 +163,7 @@ ui = fluidPage(theme = shinytheme("lumen"),
                                        selectInput('error',"Maximum Relative Error",c(0,0.3,0.5), selectize=FALSE)),
                                        
                                            
-                                           h4(HTML("<u> Step 3: Genarate Report </u>")),
+                                           h4(HTML("<u> Step 3: Generate Report </u>")),
                                        #useShinyjs(),  # Set up shinyjs
                                            actionBttn(
                                                inputId = "report",
