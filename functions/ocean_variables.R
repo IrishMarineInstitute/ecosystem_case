@@ -244,7 +244,10 @@ else{
     y<-2013:2019}
   else if(data_type=="An operational zooplankton"){
     y<-1958:2013}
-  else{y<-1992:2018}
+  else if(data_type=="Copernicus Ocean Physics"){
+    y<-1993:2019 
+  }
+  else{y<-1992:2019}
   
   ####location matrix in rasterbrick month by year####
   lev<-matrix(nrow = length(m),ncol=length(y))
