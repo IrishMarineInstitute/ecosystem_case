@@ -57,6 +57,8 @@ if (params$rendered_by_shiny)
 
 source(paste0(getwd(),"/functions/ocean_variables.R"))
 
+do.call(unlink,list(list.files("temp/",full.names=TRUE)[-1]))
+file.remove( "results/report.html", "results/Template.R" )
 do.call(unlink,list(list.files("results/plots/",full.names=TRUE)))
 do.call(unlink,list(list.files("results/data/",full.names=TRUE)))
 do.call(unlink,list(list.files("results/data/spatial/",full.names=TRUE)))
@@ -735,10 +737,18 @@ if(is.null(params$Data6)==FALSE){
   }}
 ```
 
-```{r,echo=FALSE,warning=FALSE,message=FALSE,include=FALSE}
+```{r,echo=FALSE,warning=FALSE,message=FALSE,include=FALSE,error=FALSE}
 df <- list.files(path="results/data/", full.names = TRUE,pattern = "*.csv") %>% 
   lapply(read_csv) %>% 
   bind_rows
 
 write.csv(df,"results/data/aggregated/all_aggregated_data.csv",row.names=F)
 do.call(unlink,list(list.files(path="results/data/", full.names = TRUE,pattern = "*.csv")))
+
+###combine all .R script in temp folder into one .R which could be later
+#editted and genarated by render("Template.R")
+source("functions/combine.R")
+```
+
+
+

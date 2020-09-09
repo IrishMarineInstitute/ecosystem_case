@@ -1,10 +1,10 @@
 
-##################################################################################################
+#############################################################
 #######This function aggregates variables ##################
 #######from different data sources##########################
 ############################################################
 #############################################################
-##################################################################################################
+#############################################################
 
 
 #' @param sps area of interest as spatial polyon class
@@ -98,7 +98,7 @@ plot.path <-"results/plots/"
 data.path<-"results/data/"
 
 
-#####################Reading in data ##############################
+#####################Reading in data and creating script used for editting final rmarkdown ##############################
 
 if(data_type=="Seabed Habitats Mapping around Ireland"){
   
@@ -106,6 +106,15 @@ if(data_type=="Seabed Habitats Mapping around Ireland"){
   month=NULL
   year= NULL
   
+#####creating report for editting###
+  sink("temp/v1.R")
+  cat("#'# ",data_type,"\n
+#+ echo=FALSE,results='asis'\n
+kable(read.csv('data/aggregated/SB.csv'))\n
+#'")
+  sink()
+  
+##############################
 }
 else if(data_type=="Bathymetry"){
 
@@ -114,27 +123,131 @@ else if(data_type=="Bathymetry"){
   year=NULL
   parameter=NULL
   coll<-rerddap::colors$salinity
+
+#####creating report for editting###   
+  sink("temp/v2.R")
+  cat("#'# ",data_type,"{.tabset .tabset-fade .tabset-pills} \n
+#'## Elevation relative to sea level \n
+#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics('plots/Bathymetry_Spatial.png')\n
+#'")
+  sink()
+ ############################## 
 }
 else if(data_type=="North Atlantic Ocean Monthly Model Means"){
   full_names<-read.csv('Data/ROMS.csv')
  load(paste0("Data/",parameter,".RData"))
- 
- 
+
+#####creating report for editting### 
+sink("temp/v3.R")
+cat("#'# ",data_type,"{.tabset .tabset-fade .tabset-pills} \n")
+sink()
+
+sink(paste0("temp/v3_",parameter,".R"))
+
+cat("#'##", parameter," \n
+#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',parameter,'.png")'),"\n
+#'")
+for(i in 1:length(month)){
+cat("\n#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',parameter,month[i],'_anomalies.png")'),"\n
+#'")}
+for(i in 1:length(month)){
+  cat("\n#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',data_type,'_',parameter,month[i],'_violin.png")'),"\n
+#'")}
+for(i in 1:length(month)){
+  cat("\n#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',data_type,'_',parameter,month[i],'_Spatial.png")'),"\n
+#'")}
+sink()
+############################## 
 }
  else if(data_type=="Copernicus Ocean Physics"){
 
    load("Data/copernicus_phys_monthly.RData")
    full_names<-read.csv('Data/PhysDesc.csv')
+#####creating report for editting###   
+   sink("temp/v4.R")
+   cat("#'# ",data_type,"{.tabset .tabset-fade .tabset-pills} \n")
+   sink()
+   
+   sink(paste0("temp/v4_",parameter,".R"))
+   
+   cat("#'##", parameter," \n
+#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',parameter,'.png")'),"\n
+#'")
+   for(i in 1:length(month)){
+     cat("\n#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',parameter,month[i],'_anomalies.png")'),"\n
+#'")}
+   for(i in 1:length(month)){
+     cat("\n#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',data_type,'_',parameter,month[i],'_violin.png")'),"\n
+#'")}
+   for(i in 1:length(month)){
+     cat("\n#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',data_type,'_',parameter,month[i],'_Spatial.png")'),"\n
+#'")}
+   sink()
+ ##############################   
  }
 
  else if(data_type=="Copernicus Ocean BioGeoChemistry"){
   
    load("Data/copernicus_bio_monthly.RData")
   full_names<-read.csv('Data/BioChemDesc.csv')
+  
+#####creating report for editting###  
+  sink("temp/v5.R")
+  cat("#'# ",data_type,"{.tabset .tabset-fade .tabset-pills} \n")
+  sink()
+  
+  sink(paste0("temp/v5_",parameter,".R"))
+  
+  cat("#'##", parameter," \n
+#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',parameter,'.png")'),"\n
+#'")
+  for(i in 1:length(month)){
+    cat("\n#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',parameter,month[i],'_anomalies.png")'),"\n
+#'")}
+  for(i in 1:length(month)){
+    cat("\n#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',data_type,'_',parameter,month[i],'_violin.png")'),"\n
+#'")}
+  for(i in 1:length(month)){
+    cat("\n#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',data_type,'_',parameter,month[i],'_Spatial.png")'),"\n
+#'")}
+  sink()
+##############################  
  }
 else if(data_type=="An operational zooplankton"){
  load("Data/Zoo.RData")
  full_names<-read.csv('Data/BioChemDesc.csv')
+
+#####creating report for editting### 
+ sink("temp/v6.R")
+ cat("#'# ",data_type,"{.tabset .tabset-fade .tabset-pills} \n")
+ sink()
+ 
+ sink(paste0("temp/v6_",parameter,".R"))
+ 
+ cat("#'##", parameter," \n
+#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',parameter,'.png")'),"\n
+#'")
+ for(i in 1:length(month)){
+   cat("\n#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics",paste0('("plots/',parameter,month[i],'_anomalies.png")'),"\n
+#'")}
+ 
+ sink()
+############################## 
 }
 
 
@@ -156,7 +269,7 @@ if(data_type=="Seabed Habitats Mapping around Ireland"){
       group_by(!!sym(var)) %>%
       dplyr::summarize(area_km2 = round(sum(area_km2),0)) %>%
       mutate(perc = paste0(round(100 * area_km2 / sum(area_km2), 1), "%"))
-    
+    write.csv(tab,"results/data/aggregated/SB.csv",row.names = F)
     #summary
     
     kable(tab)%>%kable_styling()%>%
@@ -168,6 +281,7 @@ if(data_type=="Seabed Habitats Mapping around Ireland"){
   #save subsetted shapefile
   st_write(cc,"results/data/spatial/Sea_bed_subset.shp")  
   
+ 
 }
 else if(data_type=="Bathymetry"){
   ####################################################################

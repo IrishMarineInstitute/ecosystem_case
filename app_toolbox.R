@@ -46,6 +46,7 @@ button_color_css <- "
 }"
 # Define UI for application that draws a histogram
 ui = fluidPage(theme = shinytheme("lumen"),
+               options(shiny.sanitize.errors = TRUE),
                tags$head(tags$style(".shiny-notification{
                  position: fixed;
                  top: 33%;
@@ -173,6 +174,8 @@ ui = fluidPage(theme = shinytheme("lumen"),
                                                icon = icon("file-alt"),
                                                block = TRUE
                                            ) ,
+                                       h4(HTML("<u> Step 4: Download Results </u><p> Press download if you are happy with selection in previous steps.</p>")),
+                                       downloadButton("downloadResults", label = "Download")
                                        ),mainPanel(tabsetPanel( id="inTabset",selected ="Data Description",
                                                                 tabPanel("Data Description",uiOutput("dataD")),
                                                                 tabPanel("Area Selection Explorer",uiOutput("area"),uiOutput("action")),                      
@@ -371,9 +374,9 @@ server = function(input, output,session) {
          
         
         output$test <- renderUI({
-            list(paste("Saved Report Location: ",paste0(getwd(),"/report_runs")),
+            list(#paste("Saved Report Location: ",paste0(getwd(),"/report_runs")),
                 withProgress(message = 'Generating Report',includeHTML(rmarkdown::render("report.Rmd",
-                                               params = params,output_dir = paste0(getwd(),"/report_runs")
+                                               params = params,output_dir = paste0(getwd(),"/results")
                  ))))
             
         })
@@ -382,7 +385,20 @@ server = function(input, output,session) {
     
     output$dataD <- renderUI({
         updateTabsetPanel(session, "inTabset",selected = "Data Description")
-        includeHTML("Data-Sources.html")})  
+        includeHTML("Data-Sources.html")}) 
+    source("functions/combine.R")
+    
+   ####Download results####### 
+    
+    output$downloadResults <- downloadHandler(
+      filename <- function() {
+        paste("output", "zip", sep=".")
+      },
+      
+      content <- function(file) {
+        zip(file, "results/")
+      }
+    )
 }
 
 # Run the application 
