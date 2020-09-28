@@ -162,7 +162,30 @@ ui = fluidPage(theme = shinytheme("lumen"),
                                                                                 animation = "tada", status = "default",inline = TRUE),
                                                           
                                        selectInput('error',"Maximum Relative Error",c(0,0.3,0.5), selectize=FALSE)),
+                                       awesomeCheckboxGroup(
+                                         inputId = "Data7", label="",
+                                         choices = c(
+                                           "Waves"
+                                         )),
                                        
+                                       conditionalPanel(condition = "input.Data7.includes('Waves')",
+                                                        prettyCheckboxGroup(inputId = "DS7",
+                                                                            label = "", icon = icon("check"),
+                                                                            choices = c("ke_waves_atlantic"),
+                                                                            selected="ke_waves_atlantic",
+                                                                            animation = "tada", status = "default",inline = TRUE)), 
+                                       awesomeCheckboxGroup(
+                                         inputId = "Data8", label="",
+                                         choices = c(
+                                           "Currents"
+                                         )),
+                                       
+                                       conditionalPanel(condition = "input.Data8.includes('Currents')",
+                                                        prettyCheckboxGroup(inputId = "DS8",
+                                                                            label = "", icon = icon("check"),
+                                                                            choices = c(" ke_currents_atlantic "),
+                                                                            selected=" ke_currents_atlantic ",
+                                                                            animation = "tada", status = "default",inline = TRUE)), 
                                            
                                            h4(HTML("<u> Step 3: Generate Report </u>")),
                                        #useShinyjs(),  # Set up shinyjs
@@ -339,6 +362,10 @@ server = function(input, output,session) {
                              season=input$season,
                              timeGap=input$ttZ,
                              error=input$error,
+                             Data7=input$Data7,
+                             DS7=input$DS7,
+                             Data8=input$Data8,
+                             DS8=input$DS8,
                              rendered_by_shiny = TRUE
                            )
           }
@@ -364,6 +391,10 @@ server = function(input, output,session) {
                             Data6=input$Data6,
                             DS6=input$DS6,
                             y4=input$slider4,
+                            Data7=input$Data7,
+                            DS7=input$DS7,
+                            Data8=input$Data8,
+                            DS8=input$DS8,
                             season=input$season,
                             timeGap=input$ttZ,
                             error=input$error,

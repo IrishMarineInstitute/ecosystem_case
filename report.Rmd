@@ -31,6 +31,10 @@ params:
   season: NA
   timeGap: NA
   error: NA
+  Data7: NA
+  DS7: NA
+  Data8: NA
+  DS8: NA
   rendered_by_shiny: FALSE
 
  
@@ -736,6 +740,62 @@ if(is.null(params$Data6)==FALSE){
     ocean_variables(sps=sps,month=params$season,year=min(params$y4):max(params$y4),data_type =params$Data6,parameter=params$DS6[7],max_rel_error=as.numeric(params$error))
   }}
 ```
+
+
+```{r,echo=FALSE,results='asis'}
+ 
+if(is.null(params$Data7)== FALSE){
+  cat(paste("# ", params$Data7, "{.tabset .tabset-fade .tabset-pills}" ))}
+
+```
+
+
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data7)==FALSE){
+    if(is.null(params$DS7)== TRUE){warning(paste("Select",params$Data7, "parameters or unselect data source"))}
+    else if(params$DS7!="NA"){
+    cat(paste("## ", params$DS7))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE, fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data7)==FALSE){
+    if(is.null(params$DS7)== TRUE){HTML(paste(""))}
+    else if(params$DS7!="NA"){ocean_variables(sps=sps,data_type=params$Data7)}
+   }
+```
+
+
+```{r,echo=FALSE,results='asis'}
+ 
+if(is.null(params$Data8)== FALSE){
+  cat(paste("# ", params$Data8, "{.tabset .tabset-fade .tabset-pills}" ))}
+
+```
+
+
+
+```{r,echo=FALSE,results='asis'}
+
+  if(is.null(params$Data8)==FALSE){
+    if(is.null(params$DS8)== TRUE){warning(paste("Select",params$Data8, "parameters or unselect data source"))}
+    else if(params$DS8!="NA"){
+    cat(paste("## ", params$DS8))}}
+```
+
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE, fig.height = 10, fig.width = 10}
+
+  if(is.null(params$Data8)==FALSE){
+    if(is.null(params$DS8)== TRUE){HTML(paste(""))}
+    else if(params$DS8!="NA"){ocean_variables(sps=sps,data_type=params$Data8)}
+   }
+```
+
+
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE,include=FALSE,error=FALSE}
 df <- list.files(path="results/data/", full.names = TRUE,pattern = "*.csv") %>% 

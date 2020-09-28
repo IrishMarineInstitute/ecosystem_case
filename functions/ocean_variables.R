@@ -73,6 +73,12 @@
 #'  "Small_copepods"
 
 #'  @param max_rel_error 0, 0.3 or 0.5 if data_type = An operational zooplankton"
+#'  #'                    ##Specific to "Currents" variables##
+#' 
+#' "currents"  	Kinetic Energy at seabed due currents
+#' #'                    ##Specific to "Waves" variables##
+#' 
+#' "waves"  	Kinetic Energy at seabed due waves
 
 
 ##########################################################################################################
@@ -90,7 +96,9 @@ ocean_variables<-function(sps,year,month,max_rel_error=NULL,
                                       "North Atlantic Ocean Monthly Model Means",
                                       "Copernicus Ocean Physics",
                                       "Copernicus Ocean BioGeoChemistry",
-                                      "An operational zooplankton"),
+                                      "An operational zooplankton",
+                                      "Waves",
+                                      "Currents"),
                           parameter){
 
 ###set results location##
@@ -249,7 +257,42 @@ knitr::include_graphics",paste0('("plots/',parameter,month[i],'_anomalies.png")'
  sink()
 ############################## 
 }
-
+else if(data_type=="Waves"){
+  
+  load("Data/ke_waves.RData")
+  month=NULL
+  year=NULL
+  parameter=NULL
+  coll<-rerddap::colors$density
+  
+  #####creating report for editting###   
+  sink("temp/v7.R")
+  cat("#'# ",data_type,"{.tabset .tabset-fade .tabset-pills} \n
+#'## Elevation relative to sea level \n
+#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics('plots/Waves_Spatial.png')\n
+#'")
+  sink()
+  ############################## 
+}
+else if(data_type=="Currents"){
+  
+  load("Data/ke_currents.RData")
+  month=NULL
+  year=NULL
+  parameter=NULL
+  coll<-rerddap::colors$density
+  
+  #####creating report for editting###   
+  sink("temp/v8.R")
+  cat("#'# ",data_type,"{.tabset .tabset-fade .tabset-pills} \n
+#'## Elevation relative to sea level \n
+#+echo=FALSE,warning=FALSE,message=FALSE, out.width='100%' \n
+knitr::include_graphics('plots/Currents_Spatial.png')\n
+#'")
+  sink()
+  ############################## 
+}
 
 
 if(data_type=="Seabed Habitats Mapping around Ireland"){
@@ -299,6 +342,40 @@ else if(data_type=="Bathymetry"){
   whatever <-dev.off()
    
     
+}
+else if(data_type=="Currents"){
+  ####################################################################
+  # ##############Spatial plot defining color scheme###################
+  #raster <- raster(ncpath)
+  raster=ke_currents
+  masked<-mask(x=raster,mask=sps)
+  slice<-crop(x=masked,y=extent(sps))
+  writeRaster(slice, filename=paste0(data.path,"spatial/",data_type,".grd"), bandorder='BIL', overwrite=TRUE)
+  
+  print(levelplot(slice,contour=TRUE,col.regions=coll,main="EMODnet_Currents"))
+  
+  png(filename =paste0(plot.path,data_type,"_Spatial.png"))
+  print(levelplot(slice,contour=TRUE,col.regions=coll,main="EMODnet_Currents"))
+  whatever <-dev.off()
+  
+  
+}
+else if(data_type=="Waves"){
+  ####################################################################
+  # ##############Spatial plot defining color scheme###################
+  #raster <- raster(ncpath)
+  raster=ke_waves
+  masked<-mask(x=raster,mask=sps)
+  slice<-crop(x=masked,y=extent(sps))
+  writeRaster(slice, filename=paste0(data.path,"spatial/",data_type,".grd"), bandorder='BIL', overwrite=TRUE)
+  
+  print(levelplot(slice,contour=TRUE,col.regions=coll,main="EMODnet_Waves"))
+  
+  png(filename =paste0(plot.path,data_type,"_Spatial.png"))
+  print(levelplot(slice,contour=TRUE,col.regions=coll,main="EMODnet_Waves"))
+  whatever <-dev.off()
+  
+  
 }
 
  
