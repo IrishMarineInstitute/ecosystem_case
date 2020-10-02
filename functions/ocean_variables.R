@@ -329,14 +329,14 @@ if(data_type=="Seabed Habitats Mapping around Ireland"){
 else if(data_type=="Bathymetry"){
   ####################################################################
   # ##############Spatial plot defining color scheme###################
-  #raster <- raster(ncpath)
+ 
   raster=gebco_2020
   masked<-mask(x=raster,mask=sps)
   slice<-crop(x=masked,y=extent(sps))
   writeRaster(slice, filename=paste0(data.path,"spatial/",data_type,".grd"), bandorder='BIL', overwrite=TRUE)
   
   print(levelplot(slice,contour=TRUE,col.regions=coll,main="GEBCO_Bathymetry"))
-  
+  print(summary(raster::extract(slice,c(1:(slice@ncols*slice@nrows)))))
   png(filename =paste0(plot.path,data_type,"_Spatial.png"))
   print(levelplot(slice,contour=TRUE,col.regions=coll,main="GEBCO_Bathymetry"))
   whatever <-dev.off()
@@ -346,13 +346,14 @@ else if(data_type=="Bathymetry"){
 else if(data_type=="Currents"){
   ####################################################################
   # ##############Spatial plot defining color scheme###################
-  #raster <- raster(ncpath)
+  
   raster=ke_currents
   masked<-mask(x=raster,mask=sps)
   slice<-crop(x=masked,y=extent(sps))
   writeRaster(slice, filename=paste0(data.path,"spatial/",data_type,".grd"), bandorder='BIL', overwrite=TRUE)
   
   print(levelplot(slice,contour=TRUE,col.regions=coll,main="EMODnet_Currents"))
+  print(summary(raster::extract(slice,c(1:(slice@ncols*slice@nrows)))))
   
   png(filename =paste0(plot.path,data_type,"_Spatial.png"))
   print(levelplot(slice,contour=TRUE,col.regions=coll,main="EMODnet_Currents"))
@@ -363,14 +364,14 @@ else if(data_type=="Currents"){
 else if(data_type=="Waves"){
   ####################################################################
   # ##############Spatial plot defining color scheme###################
-  #raster <- raster(ncpath)
+  
   raster=ke_waves
   masked<-mask(x=raster,mask=sps)
   slice<-crop(x=masked,y=extent(sps))
   writeRaster(slice, filename=paste0(data.path,"spatial/",data_type,".grd"), bandorder='BIL', overwrite=TRUE)
   
   print(levelplot(slice,contour=TRUE,col.regions=coll,main="EMODnet_Waves"))
-  
+  print(summary(raster::extract(slice,c(1:(slice@ncols*slice@nrows)))))
   png(filename =paste0(plot.path,data_type,"_Spatial.png"))
   print(levelplot(slice,contour=TRUE,col.regions=coll,main="EMODnet_Waves"))
   whatever <-dev.off()

@@ -54,6 +54,7 @@ library(plyr)
 library(dplyr)
 library(ncdf4)
 library(ggplot2)
+library(papeR)
 
 if (params$rendered_by_shiny)
   shiny::setProgress(1)
@@ -154,9 +155,12 @@ if(is.null(params$Data2)== FALSE){
 
   if(is.null(params$Data2)==FALSE){
     if(is.null(params$DS2)== TRUE){HTML(paste(""))}
-    else if(params$DS2!="NA"){ocean_variables(sps=sps,data_type=params$Data2)}
+    else if(params$DS2!="NA"){ocean_variables(sps=sps,data_type=params$Data2)
+     
+      }
    }
 ```
+
 
 
 

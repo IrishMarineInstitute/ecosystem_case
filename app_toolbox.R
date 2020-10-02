@@ -24,6 +24,7 @@ library(readr)
 library(ncdf4)
 library(ggplot2)
 library(rasterVis)
+library(papeR)
 
 map <- leaflet() %>%
     addTiles()%>% setView(lng=-12,lat=53,zoom=6)%>%
