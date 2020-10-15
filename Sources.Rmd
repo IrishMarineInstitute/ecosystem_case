@@ -1,0 +1,269 @@
+---
+title: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(knitr)
+library(rgdal)
+library(pander)
+library(kableExtra)
+library(leaflet)
+library(leaflet.extras)
+library(leaflet.extras2)
+
+```
+
+
+
+### 1.Seabed Habitats Mapping around Ireland  {.tabset .tabset-fade .tabset-pills}
+
+Since 1999, the vast seabed off the Irish coast has been mapped acoustically by two projects: INSS and INFOMAR. The most up-to-date data of seabed substrate/broad habitat in Irish waters provided by INFOMAR.
+
+https://www.infomar.ie/maps/interactive-maps/seabed-and-sediment
+
+
+
+The data are in shapefile format and can be summarized by the following attributes.
+
+<u>*Geographical Covarage:*</u>  Lon: from 56 till 48, Lat: from -18 till -2 
+
+<u>*Observation or Models:*</u> Observation
+
+<u>*Original File format:*</u> shapefile
+
+<u>*Attrubutes:*</u> 
+
+```{r echo=FALSE,results= 'asis'}
+kable(read.csv("Data/Habitatattributes.csv")[c(1:5)] )%>%
+  kable_styling(bootstrap_options = c("striped", "hover"),full_width = F)
+
+
+```
+
+### 2.Gridded Bathymetry Data  {.tabset .tabset-fade .tabset-pills}
+
+<u>*Overview:*</u> 
+
+The GEBCO_2020 Grid is the latest global bathymetric product released by the General Bathymetric Chart of the Oceans (GEBCO) and has been developed through the Nippon Foundation-GEBCO Seabed 2030 Project. This is a collaborative project between the Nippon Foundation of Japan and GEBCO. The Seabed 2030 Project aims to bring together all available bathymetric data to produce the definitive map of the world ocean floor and make it available to all. Global gridded data are available in NetCDF as a ‘one-click’ download option from https://www.gebco.net/data_and_products/gridded_bathymetry_data/.
+
+<u>*Geographical Covarage:*</u>  Lon: from 56 till 48, Lat: from -18 till -2 
+
+<u>*Observation or Models:*</u> Numerical Model
+
+<u>*Original File format:*</u> NetCDF-3
+
+<u>*Variable:*</u> Elevation relative to sea level
+
+
+Within the NetCDF files, the GEBCO_2020 gridded data are stored as a two-dimensional array of 4-byte integer values of elevation in metres, with negative values for bathymetric depths and positive values for topographic heights.
+
+```{r echo=FALSE,results= 'asis'}
+bath<-data.frame(Name="elevation",Description="Elevation relative to sea level",StandardName="height_above_reference_ellipsoid",Units="Metres")
+
+kable(bath, caption = "Variables" )%>%
+  kable_styling(bootstrap_options = c("striped", "hover"),full_width = F)
+```
+
+### 3. North Atlantic Ocean Monthly Model Means  {.tabset .tabset-fade .tabset-pills}
+
+
+<u>*Overview:*</u> 
+
+Monthly mean (average) values for oceanographic parameters in the North Atlantic Ocean SWAN and ROMS models. Mean values have been calculated on a monthly basis include sea surface temperature (degreeCelsius), sea bottom temperature (degreeCelsius), sea surface salinity (PSU), bottom salinity (PSU), sea surface velocity (m/sec), mixed layer depth, significant wave height (m), mean wave direction (degreeTrue) and mean wave period (sec). SWAN (Simulating Waves Nearshore) is a third-generation wave model primarily developed for use in coastal regions. The operational East_Atlantic model is an implementation of the SWAN model for Irish waters. The Regional Ocean Modeling System (ROMS) is a free-surface, terrain-following, primitive equations ocean model widely used to model various oceanographic parameters. The Monthly Model means cover a grid of the North Atlantic Ocean around Ireland. Monthly model means have been created for the previous month to the present date. SWAN and ROMS are validated models widely used within the oceanographic community to calculate various characteristics of the ocean. Monthly model means were calculated to provide an average of oceanographic conditions per month. The monthly model averages were produced by the Oceanographic Services team within the Ocean Science and Information Services section of the Marine Institute (Ireland). Models run and completed up to the previous month of the current date. Data avialable to download https://erddap.marine.ie/erddap/griddap/IMI_Model_Stats.html
+
+<u>*Geographical Covarage:*</u>  Lon: from 56 till 48, Lat: from -18 till -2 
+
+<u>*Observation or Models:*</u> Numerical Model
+
+<u>*Temporial Coverage:*</u> from 2013-01-15 to 2019-12-15
+
+<u>*Temporial Resolution:*</u> monthly mean
+
+<u>*Original File format:*</u> NetCDF-3
+
+<u>*Variables:*</u>
+
+
+```{r echo=FALSE,results= 'asis'}
+kable(read.csv("Data/ROMS.csv"), caption = "Variables Description" )%>%
+  kable_styling(bootstrap_options = c("striped", "hover"),full_width = F)
+
+
+```
+
+### 4. Copernicus Marine Service Data  {.tabset .tabset-fade}
+
+Avialable to download:
+http://marine.copernicus.eu/services-portfolio/access-to-products/?option=com_csw&task=results
+
+Exhaustive list of Acronyms and Abbreviations.
+http://marine.copernicus.eu/glossary/
+
+<u>*Regional Domain:*</u> Iberia-Biscay-Ireland Regional Seas with subsetting
+
+
+
+
+
+
+
+
+
+
+
+
+
+##### **4.1 Ocean Physics Reanalysis **
+
+
+<u>*Overview:*</u> 
+
+The IBI (Iberian Biscay Irish) Ocean Reanalysis system provides 3D monthly and daily ocean fields, as well as hourly mean values for some surface variables, since 01/01/1992. Monthly and daily averages of 3D Temperature, Salinity, Mix Layer Depth, Sea Bottom Temperature, Zonal and Meridional Velocity components and Sea Surface Height are provided. Hourly means of surface fields for variables such as Sea Surface Height, Mix Layer Depth, Surface Temperature and Currents, together with Barotropic Velocities are also provided. The IBI model numerical core is based on the NEMO v3.6 ocean general circulation model run at 1/12° horizontal resolution.Altimeter data, in situ temperature and salinity vertical profiles and satellite sea surface temperature are assimilated.
+
+<u>*Geographical Covarage:*</u>  Lon: from 56 till 48, Lat: from -18 till -2 
+
+<u>*Observation or Models:*</u> Numerical Model
+
+<u>*Temporial Coverage:*</u> from 1992-01-16 to 2018-12-16
+
+<u>*Temporial Resolution:*</u> monthly mean
+
+<u>*Original File format:*</u> NetCDF-3
+
+<u>*Variables:*</u>
+
+
+
+```{r echo=FALSE,results= 'asis'}
+kable(read.csv("Data/PhysDesc.csv"), caption = "Variables Description" )%>%
+  kable_styling(bootstrap_options = c("striped", "hover"),full_width = F)
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+##### **4.2 Ocean BioGeoChemistry NON ASSIMILATIVE Hindcast **
+
+
+<u>*Overview:*</u> 
+
+The IBI-MFC provides a 3D high-resolution biogeochemical multi-year product starting on 01/01/1992. To this aim, an application of the biogeochemical model PISCES is run simultaneously with the ocean physical IBI reanalysis, generating both products at the same 1/12° horizontal resolution. The PISCES model is able to simulate the first levels of the marine food web, from nutrients up to mesozooplankton and it has 24 state variables. The main biogeochemical variables, such as chlorophyll, oxygen, iron, nitrate, ammonium, phosphate, silicate, net primary production and the euphotic zone depth, are distributed as part of this IBI biogeochemical multi-year product.
+
+<u>*Geographical Covarage:*</u>  Lon: from 56 till 48, Lat: from -18 till 5 
+
+<u>*Observation or Models:*</u> Numerical Model
+
+<u>*Temporial Coverage:*</u> from 1992-01-16 to 2018-12-16
+
+<u>*Temporial Resolution:*</u>  monthly mean
+
+<u>*Original File format:*</u> N/A
+
+<u>*Variables:*</u> 
+
+```{r echo=FALSE,results= 'asis'}
+kable(read.csv("Data/BioChemDesc.csv"), caption = "Variables Description" )%>%
+  kable_styling(bootstrap_options = c("striped", "hover"),full_width = F)
+
+
+```
+
+
+
+### 5. An operational zooplankton data service  {.tabset .tabset-fade .tabset-pills}
+
+<u>*Interactive Mapping:*</u>  
+
+OOPS - Copepods: ICES Operational Oceanographic Products and Services - Gridded Copepod abundance data; European Marine Observation Data Network (EMODnet) Biology project.
+
+http://gis.ices.dk/sf/index.html?widget=oops-z
+
+<u>*Data product:*</u> 
+
+The EMODnet products include a set of gridded map layers showing the average abundance of marine species for different time windows (seasonal, annual) using geospatial modelling. The spatial modelling tool used to calculate the gridded abundance maps is based on DIVA described at the following link 
+
+https://www.emodnet-biology.eu/blog/oops
+
+ 
+ 
+and abundance data for 1 year and 10 years bin available to download from
+
+https://www.emodnet-biology.eu/documents#elf_l1_RGF0YV9wcm9kdWN0c1xPT1BT as zip file for 
+
+* 6 copepod species: Acartia spp, Oithona spp, Metridia lucens, Temora longicornis, Calanus helgolandicus, Calanus finmarchicus
+* large copepod species
+* small copepod species
+
+with 
+
+<u>*Temporial Coverage:*</u> from 1958-Jan_March to 2013-Oct_Dec
+
+
+Avialable data were manipulated and subsetted to 
+
+<u>*Geographical Covarage:*</u>  Lon: from 56 till 48, Lat: from -18 till -2
+
+and saved to 
+
+<u>*Original File format:*</u> NetCDF-3 
+
+for all six species, large and small copepod  with 1 and 10 years bin.
+
+
+<u>*Variables:*</u> 
+
+
+
+```{r echo=FALSE,results= 'asis'}
+kable(read.csv("Data/Zoo.csv"), caption = "Variables" )%>%
+  kable_styling(bootstrap_options = c("striped", "hover"),full_width = F)
+
+
+```
+
+### 6. Kinetic energy at the seabed due to waves - Celtic, North Sea {.tabset .tabset-fade .tabset-pills}
+
+<u>*Overview:*</u> 
+
+Under a specific contract for the EUSeaMap project, energy layers were produced for the North and Celtic seas. Energy layers are built using data from National Oceanographic Centre (NOC) wave (ProWAM at a resolution of 12.5km) and current models (the CS20, CS3 and NEA models at resolutions of 1.8km, 10km and 35km respectively). A high resolution (~300m) bespoke wave model based on the DHI Spectral Wave model was used to augment the coastal areas where the ProWAM model resolution was inadequate. Wave and current data were combined to produce the input energy layer for the EUSeaMap model. Wave data (wave base derived from peak wave periods) were also used to define the boundary between the circalittoral and deep circalittoral biological zones.The kinetic energy due to wave action at the seabed has been expressed here as KE = ½ ?wUwp2, where Uwpis the peak value of water particle velocity on the seabed during the passage of the wave. The value of Uwphas been predicted using linear wave theory.A series of some 24 bespoke wave models which cover the full extent of the UK coastline, including Northern Europe and Ireland have been constructed using MIKE21-SW to support production of the KE outputs. Wave height exceedance probabilities were calculated based on the average 5-years of ProWAM data for years 2000 to 2005, these wave parameters were used to calibrate the local wave models and provide information in the open coastal sections of the data layer’s extent. Data are available as .tiff to download  from https://www.emodnet-seabedhabitats.eu/access-data/download-data/?linkid=ke_waves_atlantic.
+
+
+
+<u>*Observation or Models:*</u> Numerical Model
+
+<u>*Original File format:*</u> tiff
+
+<u>*Variable:*</u> ke_waves_atlantic
+
+
+
+### 7. Kinetic energy at the seabed due to currents - Celtic, North Sea {.tabset .tabset-fade .tabset-pills}
+
+<u>*Overview:*</u> 
+90th percentile Kinetic Energy due to currents at the seabed in the Atlantic Sea in N m2/s - Created for the EMODnet Seabed Habitats broad-scale habitat map (EUSeaMap 2016).
+
+North Sea and Celtic Seas (year 2001): a composite created by ABPmer of NOC POLCOMS CS20 (1.8km resolution); NOC POLCOMS CS3 (10km (2007) and NOC POLCOMS North East Atlantic.
+ Data are available as .tiff to download  from
+ https://www.emodnet-seabedhabitats.eu/access-data/download-data/?linkid=ke_currents_atlantic.
+
+
+
+<u>*Observation or Models:*</u> Numerical Model
+
+<u>*Original File format:*</u> tiff
+
+<u>*Variable:*</u> ke_currents_atlantic

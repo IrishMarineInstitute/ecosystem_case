@@ -18,6 +18,7 @@ library(pander)
 library(kableExtra)
 library(leaflet)
 library(leaflet.extras)
+library(leaflet.extras2)
 library(mapedit)
 library(sf)
 library(readr)
@@ -25,6 +26,7 @@ library(ncdf4)
 library(ggplot2)
 library(rasterVis)
 library(papeR)
+library(htmltools)
 
 map <- leaflet() %>%
     addTiles()%>% setView(lng=-12,lat=53,zoom=6)%>%
@@ -67,7 +69,7 @@ ui = fluidPage(theme = shinytheme("lumen"),
                                        sidebarPanel(
                                            h4(HTML("<u> Step 1: Select Area of Interest </u>"))
                                            ,
-                                           selectInput("select", "Select Coordinates:", choices = c("","interactively","manually")),
+                                           selectInput("select", "Select Coordinates:", choices = c("interactively","manually")),
                                            
                                            conditionalPanel(condition = "input.select == 'manually'",
                                                             
@@ -200,17 +202,17 @@ ui = fluidPage(theme = shinytheme("lumen"),
                                            ) ,
                                        h4(HTML("<u> Step 4: Download Results </u><p> Press download if you are happy with selection in previous steps.</p>")),
                                        downloadButton("downloadResults", label = "Download")
-                                       ),mainPanel(tabsetPanel( id="inTabset",selected ="Data Description",
-                                                                tabPanel("Data Description",uiOutput("dataD")),
+                                       ),mainPanel(tabsetPanel( id="inTabset",
                                                                 tabPanel("Area Selection Explorer",uiOutput("area"),uiOutput("action")),                      
-                                                                tabPanel("Report",uiOutput("test"))))))))
+                                                                tabPanel("Report",uiOutput("test")),tabPanel("Data Description",htmlOutput("dataD")) ))))))#uiOutput("dataD")#,
+
 
 # Define server logic required to draw a histogram
 server = function(input, output,session) {
     
     
     
-    
+  
     
     
     
@@ -268,7 +270,7 @@ server = function(input, output,session) {
     observeEvent(input$select, { 
         updateTabsetPanel(session, "inTabset",selected ="Area Selection Explorer")
         if(input$select=="interactively"){
-            
+        
             edits <- callModule(
                 editMod,
                 leafmap = map,
@@ -406,19 +408,19 @@ server = function(input, output,session) {
          
         
         output$test <- renderUI({
-            list(#paste("Saved Report Location: ",paste0(getwd(),"/report_runs")),
+      list(#paste("Saved Report Location: ",paste0(getwd(),"/report_runs")),
                 withProgress(message = 'Generating Report',includeHTML(rmarkdown::render("report.Rmd",
                                                params = params,output_dir = paste0(getwd(),"/results")
                  ))))
             
         })
     })
-    
-    
-    output$dataD <- renderUI({
-        updateTabsetPanel(session, "inTabset",selected = "Data Description")
-        includeHTML("Data-Sources.html")}) 
     source("functions/combine.R")
+    
+     output$dataD <- renderUI({
+      htmltools::includeHTML("Sources.html")
+       }) 
+ 
     
    ####Download results####### 
     
