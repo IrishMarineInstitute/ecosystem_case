@@ -27,6 +27,8 @@ library(ggplot2)
 library(rasterVis)
 library(papeR)
 library(htmltools)
+library(lwgeom)
+library(shinyjs)
 
 map <- leaflet() %>%
     addTiles()%>% setView(lng=-12,lat=53,zoom=6)%>%
@@ -49,6 +51,7 @@ button_color_css <- "
 }"
 # Define UI for application that draws a histogram
 ui = fluidPage(theme = shinytheme("lumen"),
+               useShinyjs(),
                options(shiny.sanitize.errors = TRUE),
                tags$head(tags$style(".shiny-notification{
                  position: fixed;
@@ -68,7 +71,7 @@ ui = fluidPage(theme = shinytheme("lumen"),
                                    sidebarLayout(
                                        sidebarPanel(
                                            h4(HTML("<u> Step 1: Select Area of Interest </u>"))
-                                           ,
+                                           , verbatimTextOutput("ttN"),
                                            selectInput("select", "Select Coordinates:", choices = c("interactively","manually")),
                                            
                                            conditionalPanel(condition = "input.select == 'manually'",
@@ -207,7 +210,7 @@ ui = fluidPage(theme = shinytheme("lumen"),
                                                                 tabPanel("Report",uiOutput("test")),tabPanel("Data Description",htmlOutput("dataD")) ))))))#uiOutput("dataD")#,
 
 
-# Define server logic required to draw a histogram
+# Define server 
 server = function(input, output,session) {
     
     
@@ -222,7 +225,7 @@ server = function(input, output,session) {
         if(input$select=="interactively"){
             actionBttn(
                 inputId = "save",
-                label = "Show selected coordinates",
+                label = "Validate selected coordinates",
                 color = "success"
             )
         }
@@ -235,27 +238,38 @@ server = function(input, output,session) {
         updateTabsetPanel(session, "inTabset",selected ="Area Selection Explorer")
         xcoord<-as.numeric(unlist(strsplit(input$xcoord, ",")))
         ycoord<-as.numeric(unlist(strsplit(input$ycoord, ",")))
+        if(length(which(xcoord<(-18)|xcoord>(-2)))>0){updateTextInput(session, "xcoord", value = "")}
+        else(updateTextInput(session, "xcoord", value = xcoord))
+        if(length(which(ycoord<(48)|ycoord>(56)))>0){updateTextInput(session, "ycoord", value = "")}
+        else(updateTextInput(session, "ycoord", value = ycoord))
+        if (!is.null(xcoord)) {
+          if(length(which(xcoord<(-18)|xcoord>(-2)))>0){output$summaryx<-  renderText({"Choose xcoord between -18 and -2"})}
+          else{ output$summaryx<-  renderText({xcoord})}}
         
+        if (!is.null(ycoord)) {
+          if(length(which(ycoord<(48)|ycoord>(56)))>0){output$summaryy<-  renderText({"Choose ycoord between 48 and 56"})}
+          else{ output$summaryy<-  renderText({ycoord})}} 
         
-        output$summary <- renderText({
-            
-            return(paste(xcoord,ycoord))
-            
-        })
+        # output$summary <- renderText({
+        #     
+        #     return(paste(xcoord,ycoord))
+        #     
+        # })
         
         output$polP <- renderPlot({
-            
+          if(length(which(ycoord<(48)|ycoord>(56)))>0&length(which(xcoord<(-18)|xcoord>(-2)))>0){
             xym <- cbind(xcoord, ycoord)
             p = Polygon(xym)
             ps = Polygons(list(p),1)
             sps = SpatialPolygons(list(ps))
             proj4string(sps) = CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
-            plot(sps,axes=T)
+            plot(sps,axes=T)}
+          else{}
             
         })
         output$area <- renderUI({
             
-            list(verbatimTextOutput("summary"),plotOutput("polP"))
+            list(verbatimTextOutput("summaryx"),verbatimTextOutput("summaryy"),plotOutput("polP"))
             
             
             
@@ -280,15 +294,20 @@ server = function(input, output,session) {
                 updateTabsetPanel(session, "inTabset",selected ="Area Selection Explorer")
                 x_geom <- edits()$finished$geometry[[1]][[1]][,1]
                 y_geom<-edits()$finished$geometry[[1]][[1]][,2]
-                updateTextInput(session, "xcoord2", value = x_geom)
-                updateTextInput(session, "ycoord2", value = y_geom)
-                if (!is.null(x_geom)) {
-                    output$xcoord<-  renderText({x_geom})}
+                if(length(which(x_geom<(-18)|x_geom>(-2)))>0){updateTextInput(session, "xcoord2", value = "")}
+                else(updateTextInput(session, "xcoord2", value = x_geom))
+                if(length(which(y_geom<(48)|y_geom>(56)))>0){updateTextInput(session, "ycoord2", value = "")}
+                else(updateTextInput(session, "ycoord2", value = y_geom))
+               if (!is.null(x_geom)) {
+                 if(length(which(x_geom<(-18)|x_geom>(-2)))>0){output$xcoord<-  renderText({"Select xcoord between -18 and -2"})}
+                   else{ output$xcoord<-  renderText({x_geom})}}
+               
                 if (!is.null(y_geom)) {
-                    output$ycoord<-  renderText({y_geom})} 
+                  if(length(which(y_geom<(48)|y_geom>(56)))>0){output$ycoord<-  renderText({"Select ycoord between 48 and 56"})}
+                  else{ output$ycoord<-  renderText({y_geom})}} 
                 
-               output$note<- renderText({ "!!!After every selection click Recycling Bin to clear selected layer"})
-                
+               output$note<- renderText({"!!!After every selection click Recycling Bin to clear selected layer"})
+               
             })
             output$area<-renderUI(
                 list( editModUI("map"),
@@ -328,12 +347,36 @@ server = function(input, output,session) {
       if(length(input$DS5) > 3){
         updatePrettyCheckboxGroup(session, "DS5", selected= "")
       }
+      
       #   if(length(min(input$slider4):max(input$slider4)) > 20){
       #     updateSliderInput(session, "slider4", value = c(2011, 2013)) 
       #   
       # }
-    })  
+    })
     
+       observe({
+         if(input$select=="interactively"){
+         if(input$xcoord2==""||input$ycoord2==""){
+           disable("report")
+           disable("downloadResults")
+        }
+         else{
+        enable("report")
+         enable("downloadResults")
+         }}
+         else if(input$select=="manually"){
+           if(input$xcoord==""||input$ycoord==""){
+             disable("report")
+             disable("downloadResults")
+           }
+           else{
+             enable("report")
+             enable("downloadResults")
+           }
+         }
+          
+        })
+   # output$ttN<-renderText(input$save==0 )
     
     observeEvent(input$report, {
         updateTabsetPanel(session, "inTabset",selected = "Report")
@@ -408,8 +451,7 @@ server = function(input, output,session) {
          
         
         output$test <- renderUI({
-      list(#paste("Saved Report Location: ",paste0(getwd(),"/report_runs")),
-                withProgress(message = 'Generating Report',includeHTML(rmarkdown::render("report.Rmd",
+      list( withProgress(message = 'Generating Report',includeHTML(rmarkdown::render("report.Rmd",
                                                params = params,output_dir = paste0(getwd(),"/results")
                  ))))
             

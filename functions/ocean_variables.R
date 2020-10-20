@@ -315,8 +315,7 @@ if(data_type=="Seabed Habitats Mapping around Ireland"){
     write.csv(tab,"results/data/aggregated/SB.csv",row.names = F)
     #summary
     
-    kable(tab)%>%kable_styling()%>%
-      print()
+  return(kable(tab))
     
     
     

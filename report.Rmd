@@ -2,8 +2,9 @@
 title: "Template based on selected inputs."
 output:
   html_document:
- 
     toc: true
+   
+ 
 
 date: '`r format(Sys.time(), "%d %B, %Y")`'
 params:
@@ -56,18 +57,18 @@ library(ncdf4)
 library(ggplot2)
 library(papeR)
 
-if (params$rendered_by_shiny)
-  shiny::setProgress(1)
+# if (params$rendered_by_shiny)
+#   shiny::setProgress(1)
 
 
 source(paste0(getwd(),"/functions/ocean_variables.R"))
 
-do.call(unlink,list(list.files("temp/",full.names=TRUE)[-1]))
-file.remove( "results/report.html", "results/Template.R" )
-do.call(unlink,list(list.files("results/plots/",full.names=TRUE)))
-do.call(unlink,list(list.files("results/data/",full.names=TRUE)))
-do.call(unlink,list(list.files("results/data/spatial/",full.names=TRUE)))
-do.call(unlink,list(list.files("results/data/aggregated/",full.names=TRUE)))
+ do.call(unlink,list(list.files("temp/",full.names=TRUE)[-1]))
+invisible(file.remove( "results/report.html", "results/Template.R" ))
+ do.call(unlink,list(list.files("results/plots/",full.names=TRUE)))
+ do.call(unlink,list(list.files("results/data/",full.names=TRUE)))
+ do.call(unlink,list(list.files("results/data/spatial/",full.names=TRUE)))
+ do.call(unlink,list(list.files("results/data/aggregated/",full.names=TRUE)))
 
 ```
 
@@ -85,7 +86,7 @@ $('.title').css('color', 'blue')
 # The `params` object is available in the document.
 xcoord<-as.numeric(unlist(strsplit(params$xcoord, ",")))
 HTML(paste0("x",1:length(xcoord),"=",xcoord))
-if(xcoord<(-18)|xcoord>(-2)){stop("Select xcoord between -18 and -2")}
+
 
 ```
 <br>
@@ -95,12 +96,14 @@ if(xcoord<(-18)|xcoord>(-2)){stop("Select xcoord between -18 and -2")}
 
 ycoord<-as.numeric(unlist(strsplit(params$ycoord, ",")))
 HTML(paste0("y",1:length(ycoord),"=",ycoord))
-if(ycoord<(48)|ycoord>(56)){stop("Select ycoord between 48 and 56")}
+
 
 
 ```
 
-```{r,echo=FALSE}
+
+```{r,echo=FALSE,warning=FALSE}
+
 #making spatial polygon for subsetting
 xym <- cbind(xcoord, ycoord)
 p = Polygon(xym)
@@ -108,6 +111,8 @@ ps = Polygons(list(p),1)
 sps = SpatialPolygons(list(ps))
 proj4string(sps) = CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 #plot(sps,axes=T)
+if (params$rendered_by_shiny)
+  shiny::setProgress(1/10,message="Selecting Area of Interest")
 
 ```
 
@@ -129,8 +134,12 @@ if(is.null(params$Data1)==FALSE){
 
 if(is.null(params$Data1)==FALSE){
   #if(is.null(params$DS1)== FALSE){seabed_habitats_summary(sps=sps,parameters = params$DS1)}
-  if(is.null(params$DS1)== FALSE){ocean_variables(sps=sps,data_type=params$Data1,parameter = params$DS1)}
- }
+  if(is.null(params$DS1)== FALSE){
+     if (params$rendered_by_shiny)
+   shiny::setProgress(2/10,"Applying to Seabed Habitats Mapping data")
+    ocean_variables(sps=sps,data_type=params$Data1,parameter = params$DS1)}
+}
+
 ```
 
 ```{r,echo=FALSE,results='asis'}
@@ -145,7 +154,7 @@ if(is.null(params$Data2)== FALSE){
 ```{r,echo=FALSE,results='asis'}
 
   if(is.null(params$Data2)==FALSE){
-    if(is.null(params$DS2)== TRUE){warning(paste("Select",params$Data2, "parameters or unselect data source"))}
+   if(is.null(params$DS2)== TRUE){warning(paste("Select",params$Data2, "parameters or unselect data source"))}
     else if(params$DS2!="NA"){
     cat(paste("## ", params$DS2))}}
 ```
@@ -155,10 +164,13 @@ if(is.null(params$Data2)== FALSE){
 
   if(is.null(params$Data2)==FALSE){
     if(is.null(params$DS2)== TRUE){HTML(paste(""))}
-    else if(params$DS2!="NA"){ocean_variables(sps=sps,data_type=params$Data2)
-     
-      }
-   }
+    else if(params$DS2!="NA"){
+      ocean_variables(sps=sps,data_type=params$Data2)
+     if (params$rendered_by_shiny)
+     shiny::setProgress(3/10,message="Applying to Bathymetry data")
+     }
+  }
+
 ```
 
 
@@ -180,6 +192,17 @@ if(is.null(params$Data3)== FALSE){
 ```
 
 
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+  if(is.null(params$Data3)==FALSE){
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
+    else if(params$DS3!="NA"){
+     
+     if (params$rendered_by_shiny)
+  shiny::setProgress(4/10,message="Applying to North Atlantic Ocean Monthly Model Means data") }
+  }
+
+```
 
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
@@ -314,7 +337,7 @@ if(is.null(params$Data3)== FALSE){
 ```{r,echo=FALSE,results='asis'}
 
   if(is.null(params$Data3)==FALSE){
-    if(is.null(params$DS1)== TRUE){HTML(paste(""))}
+    if(is.null(params$DS3)== TRUE){HTML(paste(""))}
     else if(is.null(params$DS3[9])== FALSE & is.na(params$DS3[9])== FALSE) {
     cat(paste("## ", params$DS3[9]))}}
 
@@ -326,8 +349,12 @@ if(is.null(params$Data3)== FALSE){
 
   if(is.null(params$Data3)==FALSE){
     if(is.null(params$DS3)== TRUE){HTML(paste(""))}
-    else if(is.null(params$DS3[9])== FALSE & is.na(params$DS3[9])== FALSE) {ocean_variables(sps=sps,month=params$m1,year=min(params$y1):max(params$y1),data_type=params$Data3,parameter=as.character(filter(read.csv("Data/ROMS.csv"),Description ==params$DS3[9])[1,1]))}}
+    else if(is.null(params$DS3[9])== FALSE & is.na(params$DS3[9])== FALSE) {ocean_variables(sps=sps,month=params$m1,year=min(params$y1):max(params$y1),data_type=params$Data3,parameter=as.character(filter(read.csv("Data/ROMS.csv"),Description ==params$DS3[9])[1,1]))
+      }}
+
+
 ```
+
 
 ```{r,echo=FALSE,results='asis'}
 if(is.null(params$Data4)== FALSE){
@@ -344,6 +371,17 @@ if(is.null(params$Data4)== FALSE){
     cat(paste("## ", params$DS4[1]))}}
 ```
 
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+  if(is.null(params$Data4)==FALSE){
+    if(is.null(params$DS4)== TRUE){HTML(paste(""))}
+    else if(params$DS4!="NA"){
+       if (params$rendered_by_shiny)
+  shiny::setProgress(5/10,message="Applying to Copernicus Ocean Physics data")  
+    }
+  }
+
+```
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
 
@@ -444,7 +482,10 @@ if(is.null(params$Data4)== FALSE){
 
   if(is.null(params$Data4)==FALSE){
     if(is.null(params$DS4)== TRUE){HTML(paste(""))}
-    else if(is.null(params$DS4[7])== FALSE & is.na(params$DS4[7])== FALSE) {ocean_variables(sps=sps,month=params$m2,year=min(params$y2):max(params$y2),data_type=params$Data4,parameter=as.character(filter(read.csv("Data/PhysDesc.csv"),Description ==params$DS4[7])[1,1]))}}
+    else if(is.null(params$DS4[7])== FALSE & is.na(params$DS4[7])== FALSE) {ocean_variables(sps=sps,month=params$m2,year=min(params$y2):max(params$y2),data_type=params$Data4,parameter=as.character(filter(read.csv("Data/PhysDesc.csv"),Description ==params$DS4[7])[1,1]))
+  }}
+
+
 ```
 
 ```{r,echo=FALSE,results='asis'}
@@ -460,6 +501,18 @@ if(is.null(params$Data5)== FALSE){
     if(is.null(params$DS5)== TRUE){warning(paste("Select",params$Data5, "parameters or unselect data source"))}
     else if(is.null(params$DS5[1])== FALSE & is.na(params$DS5[1])== FALSE) {
     cat(paste("## ", params$DS5[1]))}}
+```
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+  if(is.null(params$Data5)==FALSE){
+    if(is.null(params$DS5)== TRUE){HTML(paste(""))}
+    else if(params$DS5!="NA"){
+       if (params$rendered_by_shiny)
+  shiny::setProgress(6/10,message="Applying to Copernicus Ocean BioGeoChemistry data")  
+    }
+  }
+
 ```
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE,fig.height = 10, fig.width = 10}
@@ -613,7 +666,10 @@ if(is.null(params$Data5)== FALSE){
 
   if(is.null(params$Data5)==FALSE){
     if(is.null(params$DS5)== TRUE){HTML(paste(""))}
-    else if(is.null(params$DS5[10])== FALSE & is.na(params$DS5[10])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[10])[1,1]))}}
+    else if(is.null(params$DS5[10])== FALSE & is.na(params$DS5[10])== FALSE) {ocean_variables(sps=sps,month=params$m3,year=min(params$y3):max(params$y3),data_type=params$Data5,parameter=as.character(filter(read.csv("Data/BioChemDesc.csv"),Description ==params$DS5[10])[1,1]))
+     }}
+
+
 ```
 
 ```{r,echo=FALSE,results='asis'}
@@ -631,6 +687,18 @@ if(is.null(params$Data6)== FALSE){
     cat(paste("## ", params$DS6[1]))}}
 ```
 
+
+```{r,echo=FALSE,warning=FALSE,message=FALSE}
+
+  if(is.null(params$Data6)==FALSE){
+    if(is.null(params$DS6)== TRUE){HTML(paste(""))}
+    else if(params$DS6!="NA"){
+   if (params$rendered_by_shiny)
+  shiny::setProgress(7/10,message="Applying to zooplankton data")  
+    }
+  }
+
+```
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 
@@ -743,6 +811,7 @@ if(is.null(params$Data6)==FALSE){
   else if(is.null(params$DS6[7])== FALSE & is.na(params$DS6[7])== FALSE) {
     ocean_variables(sps=sps,month=params$season,year=min(params$y4):max(params$y4),data_type =params$Data6,parameter=params$DS6[7],max_rel_error=as.numeric(params$error))
   }}
+
 ```
 
 
@@ -768,8 +837,12 @@ if(is.null(params$Data7)== FALSE){
 
   if(is.null(params$Data7)==FALSE){
     if(is.null(params$DS7)== TRUE){HTML(paste(""))}
-    else if(params$DS7!="NA"){ocean_variables(sps=sps,data_type=params$Data7)}
-   }
+    else if(params$DS7!="NA"){
+      if (params$rendered_by_shiny)
+  shiny::setProgress(8/10,message="Applying to Waves data")
+      ocean_variables(sps=sps,data_type=params$Data7)}
+  }
+
 ```
 
 
@@ -795,8 +868,12 @@ if(is.null(params$Data8)== FALSE){
 
   if(is.null(params$Data8)==FALSE){
     if(is.null(params$DS8)== TRUE){HTML(paste(""))}
-    else if(params$DS8!="NA"){ocean_variables(sps=sps,data_type=params$Data8)}
-   }
+    else if(params$DS8!="NA"){
+      if (params$rendered_by_shiny)
+  shiny::setProgress(9/10,message="Applying to Currents data")
+      ocean_variables(sps=sps,data_type=params$Data8)}
+  }
+
 ```
 
 
@@ -809,6 +886,8 @@ df <- list.files(path="results/data/", full.names = TRUE,pattern = "*.csv") %>%
 write.csv(df,"results/data/aggregated/all_aggregated_data.csv",row.names=F)
 do.call(unlink,list(list.files(path="results/data/", full.names = TRUE,pattern = "*.csv")))
 
+if (params$rendered_by_shiny)
+  shiny::setProgress(10/10,message="Saving Results")
 ###combine all .R script in temp folder into one .R which could be later
 #editted and genarated by render("Template.R")
 source("functions/combine.R")
