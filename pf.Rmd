@@ -1,0 +1,246 @@
+---
+title: "Ecosystem"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,eval=FALSE)
+```
+
+### Github
+
+```
+ecosystem_case-master
+      |___Data
+          |__BioChemDesc.csv
+          |__Habitatattributes.csv
+          |__PhysDesc.csv
+          |__ROMS.csv
+          |__Zoo.csv
+          |__copernicus_bio_monthly.RData
+          |__copernicus_phys_monthly.RData
+          |__gebco_2020.RData
+          |__mean_wave_direction.RData
+          |__mean_wave_period.RData
+          |__sea_bottom_salinity.RData
+          |__sea_bottom_temperature.RData
+          |__sea_surface_salinity.RData
+          |__sea_surface_temperature.RData
+          |__sea_surface_x_velocity.RData
+          |__sea_surface_y_velocity.RData
+          |__significant_wave_height.RData
+          |__Zoo.RData
+          |__ke_currents.RData
+          |__ke_waves.RData
+          
+      |___functions
+          |__combine.R 
+          |__ocean_variables.R
+     
+      |___results
+          |___data
+             |__aggregated
+             |__spatial
+          |___plots
+          |___Template.Rproj
+          |__Convert_to_rmd.html
+      |__temp
+         |__a_temp.R
+      |__WWW
+        |__diag_new.png
+        |__Niamh.png
+      |__app_toolbox.R
+      |__report.Rmd
+      |__Sources.html
+      |__Sources.rmd
+      |__ecosystem_case.Rproj
+       
+    
+```
+
+
+
+
+## __Data__ 
+### .csv (No updates needed)
+
+All files used by app_toolbox.R,report.Rmd,Sources.Rmd.
+
+_PhysDesc.csv_
+
+_BioChemDesc.csv_
+
+_ROMS.csv_
+
+_Zoo.csv_
+
+_Habitatattributes.csv_
+
+
+
+All data files saved as .RData to reduce file size (github commit allows only under 100mb)
+
+### sb2019.RData
+Seabed Habitat shapefile provided by INFOMAR as shapefile which was opened in Rstudio and saved as .RData
+
+
+### gebco_2020.RData
+2D netCDF grid downloaded from https://download.gebco.net/ using boundaries Lon: from 56 till 48, Lat: from -18 till -2.
+Save file as gebco_2020.nc and use following script to create gebco_2020.RData
+
+```{r}
+library(raster)
+gebco_2020<-raster("gebco_2020.nc")
+gebco_2020<- readAll(gebco_2020) # force data into memory
+save(gebco_2020,file="Data/gebco_2020.RData")
+
+```
+
+### copernicus_bio_monthly.RData
+
+netCDF grid downloaded from https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=IBI_REANALYSIS_BIO_005_003 using boundaries Lon: from 56 till 48, Lat: from -18 till -2.
+
+Save file as copernicus_bio_monthly.nc and use following script to create copernicus_bio_monthly.RData
+```{r}
+library(raster)
+
+####Copernicus Bio
+rm(list=ls())
+vv<-read.csv("Data/BioChemDesc.csv")
+for(i in 1:length(vv[[1]])){
+  r<-brick("copernicus_bio_monthly.nc" ,varname=as.character(vv[i,1]))
+  r<- readAll(r)
+  assign(as.character(vv[i,1]),r)}
+rm(vv)
+rm(i)
+rm(r)
+save(list=ls(),file = "Data/copernicus_bio_monthly.RData")
+
+```
+### copernicus_phys_monthly.RData
+
+netCDF grid downloaded from https://resources.marine.copernicus.eu/?option=com_csw&view=details&product_id=GLOBAL_REANALYSIS_PHY_001_030 using boundaries Lon: from 56 till 48, Lat: from -18 till -2.
+
+Save file as copernicus_bio_monthly.nc and use following script to create copernicus_phys_monthly.RData
+```{r}
+library(raster)
+
+####Copernicus Physics
+rm(list=ls())
+vv<-read.csv("Data/PhysDesc.csv")
+for(i in 1:length(vv[[1]])){
+  r<-brick("copernicus_phys_monthly.nc" ,varname=as.character(vv[i,1]))
+  r<- readAll(r)
+  assign(as.character(vv[i,1]),r)}
+rm(vv)
+rm(i)
+rm(r)
+save(list=ls(),file = "Data/copernicus_phys_monthly.RData")
+
+```
+### ROMS
+
+.nc NetCDF3 downloaded from https://erddap.marine.ie/erddap/griddap/IMI_Model_Stats.html using boundaries Lon: from 56 till 48, Lat: from -18 till -2.
+
+Save file as ROMS.nc and use following script to create sea_surface_temperature.RData,
+sea_bottom_temperature.RData,
+sea_surface_salinity.RData,
+sea_bottom_salinity.Rdata,
+sea_surface_x_velocity.Rdata,
+sea_surface_y_velocity.Rdata,
+significant_wave_height.RData,
+mean_wave_direction.RData,
+mean_wave_period.RData
+
+```{r}
+####SPLIT ROMS.nc and SAVE EACH PARAMETER AS .GRD
+rm(list=ls())
+vv<-read.csv("Data/ROMS.csv")
+for(i in 1:length(vv[[1]])){
+  r<-brick("ROMS.nc" ,varname=as.character(vv[i,1]))
+  r<- readAll(r)
+  writeRaster(r, filename=paste0("ROMS/",vv[i,1],".grd"), bandorder='BIL', overwrite=TRUE)
+}
+
+# save each grid as .RData
+rm(list=ls())
+for(i in 1 :9){
+  vv<-read.csv("Data/ROMS.csv")
+  r<-brick(paste0("ROMS/",vv[i,1],".grd"))
+  r<- readAll(r)
+  assign(as.character(vv[i,1]),r)
+  rm(list=setdiff(ls(), as.character(vv[i,1])))
+  save(list=ls(),file=paste0("Data/",ls(),".RData"))
+ 
+}
+
+```
+### Zoo.RData
+
+No updates needed..historical data
+
+
+### ke_currents.RData
+
+Download data file from https://www.emodnet-seabedhabitats.eu/access-data/download-data/?linkid=ke_currents_atlantic.
+Unzipp file, rename folder to ke_currents and use following script to create ke_currents.RData
+
+```{r}
+library(raster)
+ke_currents<-raster("ke_currents/ke_currents_atlantic.tiff")
+ke_currents<- readAll(ke_currents) # force data into memory
+save(ke_currents,file="Data/ke_currents.RData")
+
+```
+
+
+### ke_waves.RData
+
+Download data file from https://www.emodnet-seabedhabitats.eu/access-data/download-data/?linkid=ke_waves_atlantic.
+Unzipp file, rename folder to ke_waves and use following script to create ke_waves.RData
+
+```{r}
+library(raster)
+ke_waves<-raster("ke_waves/ke_currents_atlantic.tiff")
+ke_waves<- readAll(ke_waves) # force data into memory
+save(ke_waves,file="Data/ke_waves.RData")
+
+```
+
+## __functions__
+
+Combine.R(used by app report.Rmd))
+ocean_variable.R(data manipulation function used by app and report.Rmd)
+
+
+## __results__
+
+Empty folder used by app_toollbox.R saving data and plots outputs
+
+## __temp__
+
+ Results temp location while app running at each stage. Content of the folder cleared after last step.
+
+## __www__
+
+diag_new.png image in github page
+
+Niamh.phg  app logo
+
+## __app_toolbox.R__
+shiny app
+
+## __Sorces.html__
+
+ Data description tab in app_toolbox.R
+## __Sorces.rmd__ 
+
+Used to render Source.html
+ 
+## __ecosystem_case.Rproj__
+
+R project
+
+## __report.Rmd__
+
+Parametarized r-markdown used to generate report in app_toolbox.R
