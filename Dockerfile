@@ -47,8 +47,7 @@ RUN wget --no-verbose https://download3.rstudio.org/ubuntu-14.04/x86_64/VERSION 
     R -e "install.packages(c('shiny', 'rmarkdown'), repos='$MRAN')" && \
     cp -R /usr/local/lib/R/site-library/shiny/examples/* /srv/shiny-server/ && \
     chown shiny:shiny /var/lib/shiny-server
-RUN Rscript -e "install.packages(c('shinydashboardPlus','shinycssloaders','shinythemes','shinyWidgets','knitr','rgdal','pander','kableExtra','leaflet','leaflet.extras','leaflet.extras2','mapedit','sf','readr','ncdf4',
-'ggplot2','rasterVis','papeR','htmltools','lwgeom','shinyjs'), repos='https://cran.rstudio.com/')"   
+RUN Rscript -e "install.packages(c('shinydashboardPlus','shinycssloaders','shinythemes','shinyWidgets','knitr','rgdal','pander','kableExtra','leaflet','leaflet.extras','leaflet.extras2','mapedit','sf','readr','ncdf4','ggplot2','rasterVis','papeR','htmltools','lwgeom','shinyjs'), repos='https://cran.rstudio.com/')"   
 
 RUN install2.r --error \
     RColorBrewer \
